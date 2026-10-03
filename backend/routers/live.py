@@ -1,0 +1,5 @@
+"""/live endpoints."""
+
+from fastapi import APIRouter
+
+router = APIRouter(tags=["live"])

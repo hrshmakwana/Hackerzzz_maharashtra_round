@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Cockpit palette. Real flight recorders are orange, so the accent is too. */
+:root {
+  --bb-bg: #0b0b0f;
+  --bb-surface: #15151c;
+  --bb-surface-2: #1c1c25;
+  --bb-border: #26262f;
+  --bb-accent: #ff6a13;
+  --bb-success: #22c55e;
+  --bb-fail: #ef4444;
+  --bb-text: #ededed;
+  --bb-text-dim: #9a9aa5;
+
+  /* step kinds (graph nodes, timeline chips) */
+  --bb-kind-plan: #a78bfa;
+  --bb-kind-llm: #38bdf8;
+  --bb-kind-tool: #ff6a13;
+  --bb-kind-retrieval: #facc15;
+  --bb-kind-final: #22c55e;
+
+  /* shadcn tokens mapped onto the palette */
+  --background: var(--bb-bg);
+  --foreground: var(--bb-text);
+  --card: var(--bb-surface);
+  --card-foreground: var(--bb-text);
+  --popover: var(--bb-surface);
+  --popover-foreground: var(--bb-text);
+  --primary: var(--bb-accent);
+  --primary-foreground: #0b0b0f;
+  --secondary: var(--bb-surface-2);
+  --secondary-foreground: var(--bb-text);
+  --muted: var(--bb-surface-2);
+  --muted-foreground: var(--bb-text-dim);
+  --accent: var(--bb-surface-2);
+  --accent-foreground: var(--bb-text);
+  --destructive: var(--bb-fail);
+  --border: var(--bb-border);
+  --input: var(--bb-border);
+  --ring: var(--bb-accent);
+  --chart-1: var(--bb-accent);
+  --chart-2: #38bdf8;
+  --chart-3: #a78bfa;
+  --chart-4: #facc15;
+  --chart-5: var(--bb-success);
+  --radius: 0.5rem;
+  --sidebar: var(--bb-surface);
+  --sidebar-foreground: var(--bb-text);
+  --sidebar-primary: var(--bb-accent);
+  --sidebar-primary-foreground: #0b0b0f;
+  --sidebar-accent: var(--bb-surface-2);
+  --sidebar-accent-foreground: var(--bb-text);
+  --sidebar-border: var(--bb-border);
+  --sidebar-ring: var(--bb-accent);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --color-surface: var(--bb-surface);
+  --color-surface-2: var(--bb-surface-2);
+  --color-success: var(--bb-success);
+  --color-fail: var(--bb-fail);
+  --color-dim: var(--bb-text-dim);
+  --color-orange: var(--bb-accent);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+/* Canon Event badge: small red/cyan offset, a nod to the Spider-Verse print look. */
+@layer components {
+  .canon-badge {
+    position: relative;
+    text-shadow: -1px 0 rgb(239 68 68 / 0.75), 1px 0 rgb(34 211 238 / 0.75);
+  }
+  .canon-badge:hover {
+    animation: canon-jitter 240ms steps(2) 2;
+  }
+}
+
+@keyframes canon-jitter {
+  0% { text-shadow: -2px 0 rgb(239 68 68 / 0.8), 2px 0 rgb(34 211 238 / 0.8); }
+  50% { text-shadow: 1px 0 rgb(239 68 68 / 0.8), -1px 0 rgb(34 211 238 / 0.8); }
+  100% { text-shadow: -1px 0 rgb(239 68 68 / 0.75), 1px 0 rgb(34 211 238 / 0.75); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canon-badge:hover { animation: none; }
+}

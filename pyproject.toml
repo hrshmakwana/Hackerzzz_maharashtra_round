@@ -1,0 +1,16 @@
+[project]
+name = "blackbox"
+version = "0.1.0"
+description = "Flight recorder for AI agents: record, blame, fork, prove."
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["blackbox_sdk*", "agent_sim*", "ml*", "backend*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
