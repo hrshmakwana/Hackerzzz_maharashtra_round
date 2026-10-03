@@ -71,7 +71,7 @@
   "pct_failed_runs_with_error": 47.53,
   "pct_success_runs_with_error": 27.7,
   "skipped_specs": 2,
-  "seconds_generate": 9.9,
-  "seconds_total": 19.1,
+  "seconds_generate": 10.0,
+  "seconds_total": 17.5,
   "db_runs": 1500
 }

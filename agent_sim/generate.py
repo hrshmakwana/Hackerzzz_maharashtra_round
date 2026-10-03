@@ -183,6 +183,7 @@ def generate(n_total: int = 5000, n_db: int = 1500, out_path: Path = DATA / "run
 
     if engine is not None:
         _write_db(engine, db_batch)
+        write_heroes(engine)
     rep = report(rows)
     rep.update({"skipped_specs": skipped, "seconds_generate": round(t_gen, 1),
                 "seconds_total": round(time.time() - t0, 1), "db_runs": len(db_batch)})
@@ -236,7 +237,21 @@ def seed_database(n: int, engine) -> int:
             continue
         batch.append((spec, final, out.record.fault_meta, now - timedelta(minutes=3 * (n - i))))
     _write_db(engine, batch)
+    write_heroes(engine)
     return len(batch)
+
+
+def write_heroes(engine) -> None:
+    from backend.store import save_runs
+
+    from .hero import hero_outcomes
+
+    now = datetime.now(timezone.utc)
+    items = []
+    for i, out in enumerate(hero_outcomes()):
+        out.record.created_at = now - timedelta(seconds=10 * i)
+        items.append((out.record, out.checkpoints))
+    save_runs(engine, items)
 
 
 def load_runs(path: Path = DATA / "runs.jsonl") -> list[dict]:
