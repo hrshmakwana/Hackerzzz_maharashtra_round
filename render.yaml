@@ -1,0 +1,22 @@
+# Render blueprint for the API (free plan).
+# The free instance sleeps after ~15 min idle and its disk is wiped on restart,
+# so the DB is re-seeded on start (SEED_RUNS_ON_START).
+services:
+  - type: web
+    name: blackbox-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///data/blackbox.db
+      - key: SEED_RUNS_ON_START
+        value: "1500"
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false
