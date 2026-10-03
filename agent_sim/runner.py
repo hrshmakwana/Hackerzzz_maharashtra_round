@@ -36,6 +36,7 @@ class RunOutcome:
     world: dict = field(default_factory=dict)
     state: dict = field(default_factory=dict)
     task: Optional[Task] = None
+    checkpoints: dict = field(default_factory=dict)
 
     @property
     def success(self) -> bool:
@@ -99,14 +100,19 @@ def run_agent(family: str, seed: int, policy: str | Any = "sim", fault: Any = No
         if e.step is None:
             e.step = fork_idx if fork_idx is not None else 0
 
-    rec = recorder or Recorder(
-        run_id=run_id, sink=sink, keep_checkpoints=keep_checkpoints,
+    meta = dict(
         task_family=family, task_id=task.task_id, task_text=task.text, seed=seed,
         policy=pol.name, split=split, parent_run_id=parent_run_id, fork_step_idx=fork_idx,
         edits=[e.model_dump(exclude_none=True) for e in edit_objs] or None,
         fault_type=fault_spec.type if fault_spec else None,
         fault_step=fault_spec.step if fault_spec else None,
     )
+    if recorder is None:
+        rec = Recorder(run_id=run_id, sink=sink, keep_checkpoints=keep_checkpoints, **meta)
+    else:
+        rec = recorder
+        for k, v in meta.items():
+            setattr(rec.run, k, v)
 
     tags: list[str] = []
     if start:
@@ -203,12 +209,13 @@ def run_agent(family: str, seed: int, policy: str | Any = "sim", fault: Any = No
             break
 
     ok, detail = check(task, world.data, final_answer, finished)
-    meta = dict(fault_spec.meta) if fault_spec else None
+    fmeta = dict(fault_spec.meta) if fault_spec else None
     record = rec.finish(
         "success" if ok else "fail", detail, final_answer or "",
-        fault_meta=meta, steps_reused=len(prefix), steps_rerun=len(rec.steps) - len(prefix),
+        fault_meta=fmeta, steps_reused=len(prefix), steps_rerun=len(rec.steps) - len(prefix),
     )
-    return RunOutcome(record=record, tags=tags, world=world.data, state=state, task=task)
+    return RunOutcome(record=record, tags=tags, world=world.data, state=state, task=task,
+                      checkpoints=rec.checkpoints)
 
 
 def side_effects(steps: list) -> list[tuple[int, str]]:
