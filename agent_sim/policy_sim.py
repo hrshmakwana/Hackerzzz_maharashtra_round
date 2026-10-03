@@ -480,6 +480,10 @@ class SimPolicy:
         name = action["name"]
         state["messages"] = (state["messages"] + [name + (" !" if error else "")])[-8:]
 
+        if error and tag.startswith("noise:"):
+            # an optional extra lookup failed; not worth retrying
+            s["noise"].append(tag.split(":", 1)[1])
+            return
         if error and not flags.get("ignore_error"):
             key = tag or name
             n = s["retries"].get(key, 0)

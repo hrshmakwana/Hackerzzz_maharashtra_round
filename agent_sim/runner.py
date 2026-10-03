@@ -81,7 +81,8 @@ def sim_cost(action: dict, output: Any, idx: int, seed: int) -> dict:
 def run_agent(family: str, seed: int, policy: str | Any = "sim", fault: Any = None, *,
               start: Optional[dict] = None, edits: Optional[list] = None, sink: Any = None,
               run_id: Optional[str] = None, split: str = "live",
-              parent_run_id: Optional[str] = None, max_steps: int = MAX_STEPS,
+              parent_run_id: Optional[str] = None, fork_step_idx: Optional[int] = None,
+              max_steps: int = MAX_STEPS,
               keep_checkpoints: bool = True, step_delay: float = 0.0,
               recorder: Optional[Recorder] = None) -> RunOutcome:
     """Run one episode.
@@ -95,7 +96,7 @@ def run_agent(family: str, seed: int, policy: str | Any = "sim", fault: Any = No
     fault_spec = FaultSpec.parse(fault)
     edit_objs = [e if isinstance(e, Edit) else Edit(**e) for e in (edits or [])]
     prefix = (start or {}).get("prefix", [])
-    fork_idx = len(prefix) if start else None
+    fork_idx = len(prefix) if start else fork_step_idx
     for e in edit_objs:
         if e.step is None:
             e.step = fork_idx if fork_idx is not None else 0

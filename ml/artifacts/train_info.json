@@ -1,0 +1,288 @@
+{
+ "version": "ranker-20261003-1348",
+ "trained_at": "2026-10-03T13:48:30+00:00",
+ "train_runs": 2736,
+ "ranking_groups": {
+  "train": 1484,
+  "val": 349
+ },
+ "train_steps": 20503,
+ "features": 61,
+ "best_iteration": {
+  "ranker": 300,
+  "classifier": 184
+ },
+ "params": {
+  "ranker": {
+   "objective": "lambdarank",
+   "n_estimators": 300,
+   "learning_rate": 0.03,
+   "num_leaves": 15,
+   "min_child_samples": 30,
+   "subsample": 0.8,
+   "subsample_freq": 1,
+   "colsample_bytree": 0.5,
+   "reg_lambda": 2.0,
+   "random_state": 7,
+   "verbose": -1
+  },
+  "classifier": {
+   "n_estimators": 400,
+   "learning_rate": 0.05,
+   "num_leaves": 31,
+   "min_child_samples": 20,
+   "subsample": 0.9,
+   "subsample_freq": 1,
+   "colsample_bytree": 0.9,
+   "random_state": 7,
+   "verbose": -1
+  }
+ },
+ "feature_importance": [
+  {
+   "feature": "transition_surprisal",
+   "gain": 14759.58
+  },
+  {
+   "feature": "error_then_continue",
+   "gain": 10689.8
+  },
+  {
+   "feature": "memory_contradiction",
+   "gain": 9727.95
+  },
+  {
+   "feature": "retrieval_doc_archived",
+   "gain": 7007.54
+  },
+  {
+   "feature": "next_surprisal",
+   "gain": 6933.48
+  },
+  {
+   "feature": "arg_ungrounded",
+   "gain": 6787.61
+  },
+  {
+   "feature": "foreign_introduced",
+   "gain": 6045.93
+  },
+  {
+   "feature": "claims_progress",
+   "gain": 5212.76
+  },
+  {
+   "feature": "arg_provenance",
+   "gain": 3865.29
+  },
+  {
+   "feature": "retrieval_doc_current",
+   "gain": 3822.42
+  },
+  {
+   "feature": "pos_rel",
+   "gain": 3762.66
+  },
+  {
+   "feature": "claimed_remaining",
+   "gain": 3529.26
+  },
+  {
+   "feature": "tokens_z",
+   "gain": 3295.24
+  },
+  {
+   "feature": "novel_entities",
+   "gain": 3249.84
+  },
+  {
+   "feature": "kind_tool",
+   "gain": 3079.92
+  },
+  {
+   "feature": "steps_to_end",
+   "gain": 2860.45
+  },
+  {
+   "feature": "query_doc_overlap",
+   "gain": 2838.07
+  },
+  {
+   "feature": "downstream_side_effects",
+   "gain": 2684.26
+  },
+  {
+   "feature": "arg_observed_frac",
+   "gain": 2593.2
+  },
+  {
+   "feature": "future_repeats",
+   "gain": 2186.69
+  },
+  {
+   "feature": "idx",
+   "gain": 2149.53
+  },
+  {
+   "feature": "retrieval_score",
+   "gain": 1824.27
+  },
+  {
+   "feature": "calc_consistency",
+   "gain": 1763.95
+  },
+  {
+   "feature": "error_present",
+   "gain": 1422.05
+  },
+  {
+   "feature": "side_effects_after",
+   "gain": 1334.96
+  },
+  {
+   "feature": "latency_z",
+   "gain": 961.64
+  },
+  {
+   "feature": "progress_delta",
+   "gain": 918.45
+  },
+  {
+   "feature": "downstream_dependence",
+   "gain": 904.14
+  },
+  {
+   "feature": "retrieval_requeried",
+   "gain": 858.94
+  },
+  {
+   "feature": "name_get_order",
+   "gain": 819.61
+  },
+  {
+   "feature": "introduced",
+   "gain": 721.71
+  },
+  {
+   "feature": "llm_ungrounded",
+   "gain": 643.95
+  },
+  {
+   "feature": "memory_update_size",
+   "gain": 641.5
+  },
+  {
+   "feature": "name_send_email",
+   "gain": 431.32
+  },
+  {
+   "feature": "name_retrieve_policy",
+   "gain": 337.84
+  },
+  {
+   "feature": "no_progress_repeat",
+   "gain": 333.67
+  },
+  {
+   "feature": "imperatives",
+   "gain": 285.86
+  },
+  {
+   "feature": "kind_retrieval",
+   "gain": 283.78
+  },
+  {
+   "feature": "repeat_count",
+   "gain": 273.47
+  },
+  {
+   "feature": "kind_llm",
+   "gain": 164.55
+  },
+  {
+   "feature": "skips",
+   "gain": 96.12
+  },
+  {
+   "feature": "name_cancel_order",
+   "gain": 89.95
+  },
+  {
+   "feature": "n_steps",
+   "gain": 87.69
+  },
+  {
+   "feature": "name_read_email",
+   "gain": 77.34
+  },
+  {
+   "feature": "name_update_address",
+   "gain": 56.73
+  },
+  {
+   "feature": "name_issue_refund",
+   "gain": 33.62
+  },
+  {
+   "feature": "name_search_customer",
+   "gain": 22.12
+  },
+  {
+   "feature": "name_calculate",
+   "gain": 20.23
+  },
+  {
+   "feature": "foreign_in_args",
+   "gain": 14.55
+  },
+  {
+   "feature": "name_list_orders",
+   "gain": 10.88
+  },
+  {
+   "feature": "name_llm",
+   "gain": 2.83
+  },
+  {
+   "feature": "kind_final",
+   "gain": 1.81
+  },
+  {
+   "feature": "name_plan",
+   "gain": 1.8
+  },
+  {
+   "feature": "prior_errors",
+   "gain": 1.4
+  },
+  {
+   "feature": "error_retried",
+   "gain": 0.15
+  },
+  {
+   "feature": "kind_plan",
+   "gain": 0.0
+  },
+  {
+   "feature": "name_finish",
+   "gain": 0.0
+  },
+  {
+   "feature": "llm_extra_actions",
+   "gain": 0.0
+  },
+  {
+   "feature": "memory_overwrite",
+   "gain": 0.0
+  },
+  {
+   "feature": "instruction_likeness",
+   "gain": 0.0
+  },
+  {
+   "feature": "side_effects_before",
+   "gain": 0.0
+  }
+ ],
+ "seconds": 9.1
+}

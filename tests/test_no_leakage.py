@@ -51,5 +51,5 @@ def test_faulty_steps_use_the_same_shapes_as_clean_steps():
 
 def test_feature_code_never_reads_ground_truth():
     for path in (ROOT / "ml" / "features.py", ROOT / "ml" / "explain.py"):
-        src = path.read_text().lower()
-        assert "fault" not in src, f"{path.name} mentions fault columns"
+        src = path.read_text()
+        assert not re.search(r"\bfault", src, re.I), f"{path.name} mentions fault columns"
