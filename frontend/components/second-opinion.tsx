@@ -25,7 +25,7 @@ export function SecondOpinion({ result, loading, error, labelFor }: {
         )}
       </div>
       <p className="mt-1 text-sm text-dim">
-        Independent AI models read the same recording and check our answer.
+        Independent AI models from different companies read the same recording and check our answer.
       </p>
 
       {loading && !result && (
@@ -54,7 +54,8 @@ export function SecondOpinion({ result, loading, error, labelFor }: {
                 </span>
                 <div className="min-w-0 text-sm">
                   <p>
-                    <span className="font-medium">{r.name}</span>{" "}
+                    <span className="font-medium">{r.name}</span>
+                    {r.maker && <span className="text-dim"> by {r.maker}</span>}{" "}
                     <span className={cn(state === "agree" ? "text-success" : state === "disagree" ? "text-fail" : "text-dim")}>
                       {state === "agree" ? "agrees" : state === "disagree" ? `would blame ${r.step !== null ? labelFor(r.step) : "a different step"}` : "did not answer"}
                     </span>

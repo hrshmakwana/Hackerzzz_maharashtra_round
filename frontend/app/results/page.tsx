@@ -12,10 +12,12 @@ import { cn } from "@/lib/utils"
 
 const methods = (m: Metrics) => {
   const second = modelLabel(m.judge_models?.llm_judge2)
+  const third = modelLabel(m.judge_models?.llm_judge3)
   return [
     { key: "model", name: "Black Box", how: "Our trained model" },
     { key: "llm_judge", name: "Ask Gemini", how: "Gemini reads the whole recording and names the step" },
     { key: "llm_judge2", name: `Ask ${second}`, how: `${second} reads the whole recording and names the step` },
+    { key: "llm_judge3", name: `Ask ${third}`, how: `${third} reads the whole recording and names the step` },
     { key: "last_step", name: "Blame the last step", how: "Assume the last action caused it" },
     { key: "random", name: "Random guess", how: "Pick any step" },
   ]

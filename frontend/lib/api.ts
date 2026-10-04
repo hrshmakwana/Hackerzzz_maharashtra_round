@@ -296,6 +296,7 @@ export const post = <T>(path: string, body?: unknown) =>
 
 export interface Review {
   name: string
+  maker?: string
   model: string
   agree: boolean | null
   step: number | null

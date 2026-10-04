@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from sqlmodel import Session
 
-from agent_sim.llm import reviewers
+from agent_sim.llm import MAKERS, reviewers
 
 from .diagnosis_service import diagnose, require_run
 
@@ -51,13 +51,15 @@ def _ask(name: str, client, prompt: str) -> dict:
         step = data.get("root_cause_step")
         return {
             "name": name,
+            "maker": MAKERS.get(name, ""),
             "model": client.model,
             "agree": bool(data.get("agree")),
             "step": int(step) if isinstance(step, (int, float)) or str(step).isdigit() else None,
             "reason": str(data.get("reason") or "").strip(),
         }
     except Exception as exc:  # noqa: BLE001 - one reviewer failing must not break the rest
-        return {"name": name, "model": getattr(client, "model", ""), "agree": None, "step": None,
+        return {"name": name, "maker": MAKERS.get(name, ""), "model": getattr(client, "model", ""),
+                "agree": None, "step": None,
                 "reason": "", "error": str(exc)[:200]}
 
 

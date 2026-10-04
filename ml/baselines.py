@@ -13,7 +13,8 @@ from typing import Optional
 from .common import ARTIFACTS
 
 JUDGE_CACHE = ARTIFACTS / "llm_judge_cache.json"
-JUDGE2_CACHE = ARTIFACTS / "llm_judge2_cache.json"  # second, independent AI (via Groq)
+JUDGE2_CACHE = ARTIFACTS / "llm_judge2_cache.json"  # GPT-OSS (via Groq)
+JUDGE3_CACHE = ARTIFACTS / "llm_judge3_cache.json"  # Qwen (via Groq)
 
 
 def rank_random(run: dict, seed: int = 0) -> list[int]:
@@ -112,7 +113,7 @@ def main() -> None:
 
     ap = argparse.ArgumentParser(description="Run the Gemini judge baseline on a fixed sample.")
     ap.add_argument("--limit", type=int, default=100)
-    ap.add_argument("--second", action="store_true", help="use the second AI (Groq) instead of Gemini")
+    ap.add_argument("--judge", choices=["gemini", "gpt-oss", "qwen"], default="gemini")
     args = ap.parse_args()
     runs = [r for r in load_runs() if r["status"] == "fail" and r.get("fault_step") is not None]
     picked = []
@@ -120,12 +121,14 @@ def main() -> None:
         pool = [r for r in runs if r["split"] == split]
         random.Random(f"judge:{split}").shuffle(pool)
         picked += pool[: int(args.limit * share)]
-    if args.second:
+    if args.judge == "gemini":
+        run_llm_judge(picked, limit=args.limit)
+    else:
         from agent_sim.llm import GroqClient
 
-        run_llm_judge(picked, limit=args.limit, path=JUDGE2_CACHE, sleep=2.5, client=GroqClient())
-    else:
-        run_llm_judge(picked, limit=args.limit)
+        model, path = {"gpt-oss": ("openai/gpt-oss-120b", JUDGE2_CACHE),
+                       "qwen": ("qwen/qwen3.8-27b", JUDGE3_CACHE)}[args.judge]
+        run_llm_judge(picked, limit=args.limit, path=path, sleep=2.2, client=GroqClient(model))
 
 
 if __name__ == "__main__":

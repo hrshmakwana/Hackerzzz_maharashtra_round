@@ -207,13 +207,23 @@ def model_label(model: str) -> str:
     return m.split("-")[0].capitalize()
 
 
+MAKERS = {"Gemini": "Google", "GPT-OSS": "OpenAI", "Llama": "Meta", "Qwen": "Alibaba",
+          "DeepSeek": "DeepSeek", "Kimi": "Moonshot"}
+DEFAULT_GROQ_MODELS = "openai/gpt-oss-120b,qwen/qwen3.8-27b"
+
+
+def groq_models() -> list[str]:
+    raw = os.getenv("GROQ_MODELS") or os.getenv("GROQ_MODEL") or DEFAULT_GROQ_MODELS
+    return [m.strip() for m in raw.split(",") if m.strip()]
+
+
 def reviewers() -> list[tuple[str, Any]]:
-    """Independent AIs available to double-check a diagnosis."""
+    """Independent AIs (from different companies) available to double-check a diagnosis."""
     out: list[tuple[str, Any]] = []
     if gemini_available():
         c = GeminiClient()
         out.append((model_label(c.model or "gemini"), c))
     if groq_available():
-        c = GroqClient()
-        out.append((model_label(c.model), c))
+        for m in groq_models():
+            out.append((model_label(m), GroqClient(m)))
     return out

@@ -20,6 +20,7 @@ from sklearn.metrics import roc_auc_score
 
 from .baselines import (
     JUDGE2_CACHE,
+    JUDGE3_CACHE,
     load_judge_cache,
     rank_first_error,
     rank_last_step,
@@ -36,7 +37,7 @@ SPLIT_LABELS = {
     "heldout_family": "Held-out task family",
     "live": "Real Gemini agent",
 }
-METHODS = ["model", "llm_judge", "llm_judge2", "first_error", "last_step", "random"]
+METHODS = ["model", "llm_judge", "llm_judge2", "llm_judge3", "first_error", "last_step", "random"]
 
 
 def ranking_metrics(runs: list[dict], rank: Callable[[dict], Optional[list[int]]]) -> dict:
@@ -87,10 +88,12 @@ def evaluate(runs: list[dict] | None = None, replay: bool = True, quiet: bool = 
     models = load_models()
     judge_cache = load_judge_cache()
     judge2_cache = load_judge_cache(JUDGE2_CACHE)
+    judge3_cache = load_judge_cache(JUDGE3_CACHE)
     rankers = {
         "model": model_ranker(models),
         "llm_judge": lambda r: rank_llm_judge(r, judge_cache),
         "llm_judge2": lambda r: rank_llm_judge(r, judge2_cache),
+        "llm_judge3": lambda r: rank_llm_judge(r, judge3_cache),
         "first_error": rank_first_error,
         "last_step": rank_last_step,
         "random": rank_random,
@@ -133,6 +136,7 @@ def evaluate(runs: list[dict] | None = None, replay: bool = True, quiet: bool = 
         "judge_models": {
             "llm_judge": next((v.get("model") for v in judge_cache.values() if v.get("model")), None),
             "llm_judge2": next((v.get("model") for v in judge2_cache.values() if v.get("model")), None),
+            "llm_judge3": next((v.get("model") for v in judge3_cache.values() if v.get("model")), None),
         },
     }
     if replay:
@@ -232,17 +236,25 @@ def update_readme(m: dict) -> None:
     text = path.read_text() if path.exists() else ""
     if start not in text or end not in text:
         return
-    rows = ["| Split | Black Box ranker Top-1 | Top-3 | Gemini as judge Top-1 | Last action | First error | Random |",
-            "|---|---|---|---|---|---|---|"]
+    judges = [(k, m.get("judge_models", {}).get(k)) for k in ("llm_judge", "llm_judge2", "llm_judge3")]
+    judges = [(k, model) for k, model in judges if model]
+    names = {"llm_judge": "Gemini"}
+    for k, model in judges:
+        low = model.lower()
+        names[k] = ("GPT-OSS" if "gpt-oss" in low else "Qwen" if "qwen" in low
+                    else "Llama" if "llama" in low else "Gemini" if "gemini" in low else model)
+    head = "| Split | Black Box ranker Top-1 | Top-3 | " + \
+        "".join(f"Ask {names[k]} | " for k, _ in judges) + "Last action | First error | Random |"
+    rows = [head, "|" + "---|" * (6 + len(judges))]
     for split in ("test", "heldout_family", "heldout_type"):
         s = m["splits"].get(split)
         if not s:
             continue
         me = s["methods"]
-        judge = me.get("llm_judge", {})
-        rows.append(f"| {s['label']} | **{_pct(me['model']['top1'])}** | {_pct(me['model']['top3'])} | "
-                    f"{_pct(judge.get('top1')) if judge.get('n') else '—'} | {_pct(me['last_step']['top1'])} | "
-                    f"{_pct(me['first_error']['top1'])} | {_pct(me['random']['top1'])} |")
+        cells = [f"**{_pct(me['model']['top1'])}**", _pct(me["model"]["top3"])]
+        cells += [_pct(me[k]["top1"]) if me.get(k, {}).get("n") else "—" for k, _ in judges]
+        cells += [_pct(me["last_step"]["top1"]), _pct(me["first_error"]["top1"]), _pct(me["random"]["top1"])]
+        rows.append(f"| {s['label']} | " + " | ".join(cells) + " |")
     rp = (m.get("replay") or {}).get("splits", {})
     extra = []
     if rp:
