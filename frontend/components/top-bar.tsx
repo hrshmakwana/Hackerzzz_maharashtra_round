@@ -8,9 +8,10 @@ import { api, type Health } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
 const NAV = [
-  { href: "/", label: "Hangar" },
-  { href: "/live", label: "Mission Control" },
+  { href: "/", label: "Home" },
+  { href: "/runs", label: "All runs" },
   { href: "/lab", label: "Model Lab" },
+  { href: "/live", label: "Try it live" },
 ]
 
 export function TopBar() {
@@ -51,7 +52,9 @@ export function TopBar() {
         </Link>
         <nav className="flex items-center gap-1">
           {NAV.map((n) => {
-            const active = n.href === "/" ? path === "/" || path.startsWith("/runs") || path.startsWith("/compare") : path.startsWith(n.href)
+            const active = n.href === "/" ? path === "/" || path.startsWith("/story")
+              : n.href === "/runs" ? path.startsWith("/runs") || path.startsWith("/compare")
+              : path.startsWith(n.href)
             return (
               <Link
                 key={n.href}

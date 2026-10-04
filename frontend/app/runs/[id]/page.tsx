@@ -157,13 +157,14 @@ function FlightDeck() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/" className="text-dim hover:text-foreground" aria-label="Back to Hangar">
+            <Link href="/runs" className="text-dim hover:text-foreground" aria-label="Back to all runs">
               <ArrowLeft className="size-4" />
             </Link>
             <h1 className="font-heading text-xl font-semibold tracking-tight">{label(FAMILY_LABEL, run.task_family)}</h1>
             <span className="font-mono text-xs text-dim">{shortId(run.id)}</span>
             <StatusBadge status={run.status} />
             <span className="text-xs text-dim">{label(SPLIT_LABEL, run.split)} split, {run.policy === "gemini" ? "Gemini agent" : "simulated agent"}</span>
+            <Link href={`/story/${run.id}`} className="text-xs text-orange hover:underline">Simple view</Link>
             {run.parent_run_id && (
               <Link href={`/compare?a=${run.parent_run_id}&b=${run.id}`} className="text-xs text-orange hover:underline">
                 Fork of {shortId(run.parent_run_id)} at step {run.fork_step_idx}
