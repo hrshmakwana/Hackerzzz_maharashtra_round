@@ -100,3 +100,25 @@ def run_llm_judge(runs: list[dict], limit: int = 100, path: Path = JUDGE_CACHE,
         print(f"judge {i + 1}/{len(todo)}: {cache[run['id']].get('ranking')}")
         time.sleep(sleep)
     return cache
+
+
+def main() -> None:
+    import argparse
+    import random
+
+    from .common import load_runs
+
+    ap = argparse.ArgumentParser(description="Run the Gemini judge baseline on a fixed sample.")
+    ap.add_argument("--limit", type=int, default=100)
+    args = ap.parse_args()
+    runs = [r for r in load_runs() if r["status"] == "fail" and r.get("fault_step") is not None]
+    picked = []
+    for split, share in (("test", 0.5), ("heldout_type", 0.25), ("heldout_family", 0.25)):
+        pool = [r for r in runs if r["split"] == split]
+        random.Random(f"judge:{split}").shuffle(pool)
+        picked += pool[: int(args.limit * share)]
+    run_llm_judge(picked, limit=args.limit)
+
+
+if __name__ == "__main__":
+    main()

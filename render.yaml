@@ -13,7 +13,9 @@ services:
       - key: DATABASE_URL
         value: sqlite:///data/blackbox.db
       - key: SEED_RUNS_ON_START
-        value: "1500"
+        value: "800"
+      - key: ALLOWED_ORIGIN_REGEX
+        value: https://.*\.vercel\.app
       - key: ALLOWED_ORIGINS
         sync: false
       - key: GEMINI_API_KEY

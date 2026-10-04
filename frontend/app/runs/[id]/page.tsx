@@ -293,7 +293,7 @@ function CanonBanner({ diag, runFailed, onApply, busy, onReport, reportBusy }: {
       <div className="min-w-0 flex-1">
         <p className="text-sm">
           <span className="font-heading font-semibold">Step {ce.idx}</span>
-          <span className="ml-2 font-mono text-xs text-dim">{ce.name}</span>
+          {!ce.headline.startsWith(ce.name) && <span className="ml-2 font-mono text-xs text-dim">{ce.name}</span>}
           <span className="ml-2 text-foreground/90">{ce.headline}</span>
         </p>
         {!runFailed && <p className="text-xs text-dim">This run succeeded, so this is only the step the model trusts least.</p>}

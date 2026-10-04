@@ -130,7 +130,7 @@ def propose_fix(run: dict, k: int, rows: Optional[list[dict]] = None,
         cur = current_doc_for_topic(out.get("topic", ""))
         if cur:
             return _fix("swap_document", {"doc_id": cur["doc_id"]}, "current_document",
-                        f"Use the current {cur['title']} ({cur['version']}) instead of the "
+                        f"Use the current {cur['title']} instead of the "
                         f"archived {out.get('version')} from {out.get('updated')}.")
 
     # 3. instructions hidden in content the agent read

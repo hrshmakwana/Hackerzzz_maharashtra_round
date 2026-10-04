@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-03T13:48:36+00:00",
+ "generated_at": "2026-10-04T03:42:35+00:00",
  "model_version": "ranker-20261003-1348",
  "dataset": {
   "runs": 4998,
@@ -244,7 +244,41 @@
      }
     },
     "llm_judge": {
-     "n": 0
+     "n": 50,
+     "top1": 0.76,
+     "top3": 0.88,
+     "mrr": 0.8353,
+     "mean_step_distance": 0.36,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 1,
+       "n": 5
+      },
+      "calc_error": {
+       "top1": 1,
+       "n": 6
+      },
+      "early_stop": {
+       "top1": 0.2727,
+       "n": 11
+      },
+      "hallucination": {
+       "top1": 0.875,
+       "n": 8
+      },
+      "ignored_error": {
+       "top1": 0.75,
+       "n": 8
+      },
+      "loop": {
+       "top1": 1,
+       "n": 4
+      },
+      "wrong_args": {
+       "top1": 0.875,
+       "n": 8
+      }
+     }
     },
     "first_error": {
      "n": 306,
@@ -382,7 +416,21 @@
      }
     },
     "llm_judge": {
-     "n": 0
+     "n": 25,
+     "top1": 0.36,
+     "top3": 0.36,
+     "mrr": 0.4251,
+     "mean_step_distance": 0.84,
+     "per_type_top1": {
+      "prompt_injection": {
+       "top1": 0,
+       "n": 13
+      },
+      "state_corruption": {
+       "top1": 0.75,
+       "n": 12
+      }
+     }
     },
     "first_error": {
      "n": 500,
@@ -476,7 +524,37 @@
      }
     },
     "llm_judge": {
-     "n": 0
+     "n": 24,
+     "top1": 0.7917,
+     "top3": 0.8333,
+     "mrr": 0.8328,
+     "mean_step_distance": 0.25,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 1,
+       "n": 3
+      },
+      "early_stop": {
+       "top1": 0,
+       "n": 5
+      },
+      "hallucination": {
+       "top1": 1,
+       "n": 7
+      },
+      "ignored_error": {
+       "top1": 1,
+       "n": 4
+      },
+      "loop": {
+       "top1": 1,
+       "n": 2
+      },
+      "wrong_args": {
+       "top1": 1,
+       "n": 3
+      }
+     }
     },
     "first_error": {
      "n": 359,
@@ -679,7 +757,7 @@
    "classifier": 184
   }
  },
- "judge_runs": 0,
+ "judge_runs": 99,
  "replay": {
   "n": 150,
   "splits": {
@@ -718,5 +796,5 @@
    }
   }
  },
- "seconds": 9.6
+ "seconds": 9.5
 }
