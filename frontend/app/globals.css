@@ -16,12 +16,13 @@
   --bb-text: #ededed;
   --bb-text-dim: #9a9aa5;
 
-  /* step kinds (graph nodes, timeline chips) */
-  --bb-kind-plan: #a78bfa;
-  --bb-kind-llm: #38bdf8;
-  --bb-kind-tool: #ff6a13;
-  --bb-kind-retrieval: #facc15;
-  --bb-kind-final: #22c55e;
+  /* step kinds: small dots only, always paired with a text label */
+  --bb-kind-plan: #b8a6f5;
+  --bb-kind-llm: #6cc3f0;
+  --bb-kind-tool: #c9c9d3;
+  --bb-kind-retrieval: #e8c45a;
+  --bb-kind-final: #8fd6a8;
+  --bb-context: #7c7c88;
 
   /* shadcn tokens mapped onto the palette */
   --background: var(--bb-bg);
@@ -125,6 +126,26 @@
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight;
   }
+}
+
+/* thin scrollbars that match the cockpit */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e39 transparent;
+}
+
+/* React Flow, dark */
+.react-flow {
+  --xy-background-color: transparent;
+  --xy-edge-stroke-default: #3a3a46;
+  --xy-attribution-background-color: transparent;
+  --xy-controls-button-background-color: var(--bb-surface-2);
+  --xy-controls-button-background-color-hover: #26262f;
+  --xy-controls-button-color: var(--bb-text);
+  --xy-controls-button-border-color: var(--bb-border);
+}
+.react-flow__attribution {
+  display: none;
 }
 
 /* Canon Event badge: small red/cyan offset, a nod to the Spider-Verse print look. */
