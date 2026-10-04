@@ -21,6 +21,7 @@ export default function StoryPage() {
   const [fix, setFix] = useState<ForkResult | null>(null)
   const [busy, setBusy] = useState<"blame" | "fix" | null>(null)
   const [problem, setProblem] = useState<string | null>(null)
+  const [showThinking, setShowThinking] = useState(false)
   const blamedRef = useRef<HTMLLIElement>(null)
   const resultRef = useRef<HTMLElement>(null)
 
@@ -85,7 +86,6 @@ export default function StoryPage() {
       </ol>
 
       <h1 className="font-heading text-3xl font-semibold tracking-tight">{TASK_TITLE[run.task_family] ?? "Agent run"}</h1>
-      <p className="mt-2 text-base text-dim">{run.task_text.replace(/^Today is [\d-]+\.\s*/, "")}</p>
 
       <div className={cn("mt-4 flex items-start gap-3 rounded-xl border px-4 py-3",
         failed ? "border-fail/40 bg-fail/[0.07]" : "border-success/40 bg-success/[0.07]")}>
@@ -98,9 +98,15 @@ export default function StoryPage() {
 
       {/* what the agent did */}
       <section className="mt-8">
-        <h2 className="mb-3 font-heading text-lg font-semibold">What the agent did, step by step</h2>
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <h2 className="font-heading text-lg font-semibold">What the agent did</h2>
+          <label className="flex items-center gap-2 text-xs text-dim">
+            <input type="checkbox" checked={showThinking} onChange={(e) => setShowThinking(e.target.checked)} />
+            Show its thinking too
+          </label>
+        </div>
         <ol className="rounded-xl border bg-card">
-          {run.steps.map((s) => {
+          {run.steps.filter((s) => showThinking || s.kind === "tool" || s.kind === "retrieval" || s.kind === "final" || s.idx === blamed).map((s, n) => {
             const isBlamed = blamed === s.idx
             return (
               <li
@@ -110,7 +116,7 @@ export default function StoryPage() {
                   isBlamed && "border-l-4 border-l-orange bg-orange/[0.08]",
                   blamed !== null && !isBlamed && "opacity-60")}
               >
-                <span className="w-6 shrink-0 text-right font-mono text-sm text-dim">{s.idx + 1}</span>
+                <span className="w-6 shrink-0 text-right font-mono text-sm text-dim">{n + 1}</span>
                 <div className="min-w-0">
                   <p className={cn("break-words", isBlamed && "font-medium")}>{describeStep(s)}</p>
                   {isBlamed && top && (
@@ -121,7 +127,7 @@ export default function StoryPage() {
                         Our model is {Math.round(top.prob * 100)}% sure.
                         {diag?.ground_truth && (diag.ground_truth.step === s.idx
                           ? " It matches the step we broke on purpose."
-                          : ` We actually broke step ${diag.ground_truth.step + 1}.`)}
+                          : " We actually broke a different step.")}
                       </p>
                     </div>
                   )}
@@ -144,7 +150,7 @@ export default function StoryPage() {
             </>
           ) : !fix ? (
             <>
-              <p className="flex-1 text-sm text-dim">Prove it: fix only step {blamed! + 1} and replay the rest.</p>
+              <p className="flex-1 text-sm text-dim">Prove it: fix only that step and replay the rest.</p>
               <Button size="lg" onClick={fixIt} disabled={busy !== null}>
                 {busy === "fix" ? <Loader2 className="animate-spin" /> : <Wrench />} Fix it and re-run
               </Button>
@@ -183,8 +189,8 @@ export default function StoryPage() {
           <div className="mt-3 rounded-xl border bg-card px-4 py-3 text-sm">
             <p><span className="font-medium">The fix:</span> {fix.fix?.explanation}</p>
             <p className="mt-1 text-dim">
-              Steps 1–{fix.savings.steps_reused} were reused from the recording, not run again. Only the last{" "}
-              {fix.savings.steps_rerun} steps ran, saving {fix.savings.tokens_saved.toLocaleString("en-IN")} tokens.
+              Everything before the broken step was reused from the recording, not run again. Only what came after was
+              replayed.
             </p>
           </div>
         </section>
