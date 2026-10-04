@@ -1,0 +1,308 @@
+{
+ "a8d6ef66ad0e5f62ae27aa1acd308e7c": {
+  "ranking": [
+   5,
+   4,
+   3
+  ],
+  "reason": "Step 5 incorrectly classified the order status as 'processing' despite the order data in Step 4 explicitly showing 'shipped', leading to the erroneous cancellation decision.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "20f1588fb0b75cd7bca23fff4d92a4b0": {
+  "ranking": [
+   11,
+   12,
+   13
+  ],
+  "reason": "The agent skipped the 'Email the customer' step in the plan, jumping directly from the progress check (which incorrectly marked it as done or omitted it) to summarization and finish, resulting in no email being sent.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b02ecd1967cb510cab3d68a2d54c7056": {
+  "ranking": [
+   8,
+   9,
+   7
+  ],
+  "reason": "Step 8 incorrectly marked the 'Email the customer' task as completed (or skipped it) in the plan update, causing the agent to proceed to summarization without actually sending the email.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "473894a3d1e256b7b71d82f699063e08": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "The address update failed due to rate limiting at step 6, and the agent did not retry successfully or verify the update before sending the confirmation email at step 8.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a7a2c3f5eab1538382a4187cdb0f818a": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "Step 6 failed with a connection error, but Step 7 incorrectly marked the cancellation action as completed without verifying success or handling the error, leading to the false confirmation in Step 8.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "f3aa78e998ab5a02ad8d8e93d07e2516": {
+  "ranking": [
+   7,
+   6,
+   5
+  ],
+  "reason": "Step 7 used an incorrect restocking fee percentage (12%) in the calculation instead of the 10% specified in the policy and correctly identified in Step 6, leading to the wrong refund amount.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7c5826b2135556aebf3332ac0fa1d4e0": {
+  "ranking": [
+   9,
+   10,
+   11
+  ],
+  "reason": "Step 9 incorrectly marked the 'confirm' (email) step as completed when no email was actually sent, causing the agent to skip the required confirmation and proceed directly to summarizing and finishing.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "d29be413221b5619953d8792ff75e468": {
+  "ranking": [
+   3,
+   10,
+   9
+  ],
+  "reason": "Step 3 incorrectly extracted the customer's email address as sneha.mehta@postmail.in instead of the actual sender riya.banerjee@mailbox.co.in from the email in Step 2, leading to the confirmation being sent to the wrong person in Step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "89c5a934cb075a2481a1adf207396527": {
+  "ranking": [
+   3,
+   2,
+   6
+  ],
+  "reason": "Step 3 queried the wrong order ID (6978) instead of the one requested in the email (6979), leading to the cancellation of the incorrect order.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "79160250a2eb547ab859fa450dc8196f": {
+  "ranking": [
+   8,
+   7,
+   10
+  ],
+  "reason": "Step 8 incorrectly marked the 'Email the customer' step as completed (or removed it from the remaining plan) despite no email being sent, causing the agent to skip the mandatory notification to the customer.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "c879915f28755824aac377dfee1a26de": {
+  "ranking": [
+   3,
+   6,
+   10
+  ],
+  "reason": "Step 3 incorrectly extracted the customer email as siddharth.desai@postmail.in instead of the actual sender rahul.bhat@mailbox.co.in, leading to the email being sent to the wrong person in step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "c174bf411f965774b3c8eebfaa58fbbc": {
+  "ranking": [
+   3,
+   5,
+   6
+  ],
+  "reason": "Step 3 returned an order status that was truncated in the trace, leading Step 5 to incorrectly assume the order was 'shipped' (likely misinterpreting a status like 'processing' or 'pending') and skip the required email confirmation.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "e66ef78163985042bc5c30fbf6eaa593": {
+  "ranking": [
+   2,
+   3,
+   4
+  ],
+  "reason": "Step 2 incorrectly extracted the order ID as 8581 instead of 8580, causing the agent to look up and process the wrong order.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a2e9c0509bb65034ab0719760e423493": {
+  "ranking": [
+   8,
+   7,
+   4
+  ],
+  "reason": "Step 8 used an incorrect base amount (4274) instead of the actual order amount (4247) retrieved in Step 4, leading to the wrong refund calculation.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "8dedee10d3cc5885b9e3f64543860c02": {
+  "ranking": [
+   8,
+   7,
+   4
+  ],
+  "reason": "Step 8 used an incorrect base amount (2189) instead of the actual order amount (2198) retrieved in Step 4, leading to the wrong refund calculation.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "ced118aaa4a95e78b9743b3e78d5b31b": {
+  "ranking": [
+   8,
+   9,
+   7
+  ],
+  "reason": "Step 8 initiated an unnecessary and redundant re-check of the order status, triggering a loop of repeated `get_order` calls that exhausted the step budget.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "68546bda07da57a0b1217d0f5a77fe0a": {
+  "ranking": [
+   10,
+   5,
+   11
+  ],
+  "reason": "The failure is the missing email, which was caused by the timeout at step 10; step 5 is a similar transient failure that was successfully retried, whereas step 10 was not, leading the agent to incorrectly finalize the task.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "ccaf0f9482e358e1b7b086b77ef98802": {
+  "ranking": [
+   13,
+   14,
+   15
+  ],
+  "reason": "Step 13 failed to send the email due to a service error, and the agent did not retry the action before proceeding to summarize and finish, resulting in the customer never being notified.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "bbe1137ed0545ab2a519d4314b5a53b6": {
+  "ranking": [
+   3,
+   2,
+   5
+  ],
+  "reason": "Step 3 queried the wrong order ID (3865 instead of 3864), leading to incorrect data retrieval and a false negative decision.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "5cbd4431a5b951b9ab394d7e6721bc52": {
+  "ranking": [
+   2,
+   7,
+   6
+  ],
+  "reason": "Step 2 incorrectly extracted the customer's email address as 'postmail.in' instead of the correct 'postmail.in' from the email header in Step 1, causing the final email in Step 7 to be sent to a non-existent domain.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "0d4ead86a21f580481037f6385351d93": {
+  "ranking": [
+   4,
+   5,
+   6
+  ],
+  "reason": "The retrieval step failed to identify that the retrieved policy was archived, leading the agent to apply an outdated rule that allowed address changes for shipped orders.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "e19cdf0f7109544193f56b352afdb9e1": {
+  "ranking": [
+   2,
+   8,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted the customer's email address with a typo ('inboxmail' instead of 'inboxmail'), which was then used in Step 8 to send the email to the wrong address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b90058c3b5885930926ea35f80789d6d": {
+  "ranking": [
+   9,
+   10,
+   11
+  ],
+  "reason": "Step 9 incorrectly marked the 'confirm' (email) step as completed when no email was actually sent, causing the agent to skip the required confirmation and proceed to finish.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7dc27a635fca5fe68ed2929bec63c6f4": {
+  "ranking": [
+   2,
+   4,
+   9
+  ],
+  "reason": "The LLM in step 2 incorrectly extracted the order ID as 2903 instead of 2902 from the email, leading to the retrieval of the wrong order and subsequent incorrect quote.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "99acb0bb679b5c63a4de1b9d28aa686e": {
+  "ranking": [
+   8,
+   5,
+   6
+  ],
+  "reason": "The failure was caused by the email sending tool returning a 503 error at step 8, and the agent failed to retry or handle the exception, leading to the email not being sent.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a92777091d0a5ea9bd962949c330cb36": {
+  "ranking": [
+   4,
+   5,
+   6
+  ],
+  "reason": "Step 4 queried the wrong order ID (5987 instead of 5986), leading to incorrect status retrieval and a false negative cancellation decision.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "2ee3306e65875304b0fbac4acb4bd1af": {
+  "ranking": [
+   9,
+   10,
+   8
+  ],
+  "reason": "Step 9 incorrectly marked the 'Email the customer' task as completed when it had not been executed, causing the agent to skip the actual email sending step and proceed directly to summarization.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "14d01512448d5387a6804358edf51d59": {
+  "ranking": [
+   6,
+   5,
+   4
+  ],
+  "reason": "Step 6 initiated an unnecessary and infinite loop of re-checking the order status, which was already confirmed as 'shipped' in step 4 and 5, leading to the exhaustion of the step budget.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7dd5bec526f45914862ff081d7d37f0c": {
+  "ranking": [
+   7,
+   6,
+   4
+  ],
+  "reason": "Step 7 incorrectly marked the 'Carry out the action' and 'Email the customer' steps as completed without any tool calls being made to actually cancel the order or send the confirmation email, leading to the failure.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "6a206c448d805cfa89b8416c0b2b66d3": {
+  "ranking": [
+   5,
+   9,
+   11
+  ],
+  "reason": "Step 5 incorrectly calculated the subtotal as 6396.00 by using a quantity of 3 for the Laptop Backpack instead of the correct quantity of 2 from the order details, leading to an incorrect final quote.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "18f2b14abe2f58b8a0fd1f45401a743e": {
+  "ranking": [
+   3,
+   5,
+   6
+  ],
+  "reason": "The agent retrieved an archived (v1) policy instead of the current one, leading to an incorrect decision that the shipped order was cancellable.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "46b70de1c1cf53d3863bdf4551d87bcc": {
+  "ranking": [
+   4,
+   6,
+   7
+  ],
+  "reason": "Step 4 retrieved an archived policy version (v1) instead of the current one, leading to the incorrect application of a 20% restocking fee in subsequent steps.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b76a3efe61945a4fa170686dc70fa458": {
+  "ranking": [
+   2,
+   6,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted the customer's email address with a typo ('mailbxo' instead of 'mailbox'), which was then used in Step 6 to send the email to the wrong address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "2bac2d82df335df2a9cbb8b62c56a4e1": {
+  "ranking": [
+   5,
+   7,
+   8
+  ],
+  "reason": "Step 5 queried the wrong order ID (4480 instead of 4481), causing the agent to evaluate an ineligible order and incorrectly deny the refund for the correct order.",
+  "model": "qwen/qwen3.8-27b"
+ }
+}

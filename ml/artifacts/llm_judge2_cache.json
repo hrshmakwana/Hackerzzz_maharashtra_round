@@ -1,0 +1,902 @@
+{
+ "a8d6ef66ad0e5f62ae27aa1acd308e7c": {
+  "ranking": [
+   5,
+   4,
+   2
+  ],
+  "reason": "The LLM misapplied the cancellation policy in step 5, incorrectly marking a shipped order as cancellable.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "20f1588fb0b75cd7bca23fff4d92a4b0": {
+  "ranking": [
+   11,
+   12,
+   9
+  ],
+  "reason": "The progress\u2011check step (11) incorrectly concluded that only summarise and finish remained, so the email step was never executed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b02ecd1967cb510cab3d68a2d54c7056": {
+  "ranking": [
+   8,
+   9,
+   7
+  ],
+  "reason": "The email step (index\u202f8) was never executed, so no message was sent; fixing that omission would prevent the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "473894a3d1e256b7b71d82f699063e08": {
+  "ranking": [
+   6,
+   7,
+   5
+  ],
+  "reason": "The address update call failed due to rate limiting, so the address was never changed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a7a2c3f5eab1538382a4187cdb0f818a": {
+  "ranking": [
+   6,
+   5,
+   4
+  ],
+  "reason": "The cancel_order tool call failed (step 6), so the order was never actually cancelled.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "f3aa78e998ab5a02ad8d8e93d07e2516": {
+  "ranking": [
+   7,
+   6,
+   0
+  ],
+  "reason": "Step 7 misapplied the restocking fee (used 12% instead of the 10% from policy), leading to the incorrect refund amount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7c5826b2135556aebf3332ac0fa1d4e0": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "The agent never performed the 'Email the customer' step after updating the address, so no confirmation email was sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "d29be413221b5619953d8792ff75e468": {
+  "ranking": [
+   3,
+   9,
+   2
+  ],
+  "reason": "The LLM mis\u2011identified the customer's email at step\u202f3, causing the confirmation to be sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "89c5a934cb075a2481a1adf207396527": {
+  "ranking": [
+   3,
+   2,
+   5
+  ],
+  "reason": "Step 3 fetched order #6978 instead of the requested #6979, causing the wrong cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "79160250a2eb547ab859fa450dc8196f": {
+  "ranking": [
+   7,
+   8,
+   9
+  ],
+  "reason": "Step\u202f7 incorrectly set a skip for compute and act, preventing the subsequent email step from being performed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "c879915f28755824aac377dfee1a26de": {
+  "ranking": [
+   3,
+   6,
+   10
+  ],
+  "reason": "Step\u202f3 extracted the wrong customer email, causing the later lookup and the final send_email (step\u202f10) to use siddharth.desai@postmail.in instead of the actual requester.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "c174bf411f965774b3c8eebfaa58fbbc": {
+  "ranking": [
+   5,
+   6,
+   7
+  ],
+  "reason": "Step 5 misinterpreted the order status as shipped and skipped the action, preventing the email from being sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "e66ef78163985042bc5c30fbf6eaa593": {
+  "ranking": [
+   2,
+   1,
+   0
+  ],
+  "reason": "The LLM mis\u2011extracted the order ID as 8581 instead of 8580, leading to the wrong order being processed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a2e9c0509bb65034ab0719760e423493": {
+  "ranking": [
+   8,
+   7,
+   4
+  ],
+  "reason": "Step 8 used an incorrect order amount (4274) for the refund calculation, leading to the wrong refund value.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "8dedee10d3cc5885b9e3f64543860c02": {
+  "ranking": [
+   8,
+   7,
+   9
+  ],
+  "reason": "Step 8 used an incorrect base amount (2189 instead of the order total 2198) for the refund calculation, leading to the wrong refund amount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "ced118aaa4a95e78b9743b3e78d5b31b": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "Step\u202f8 introduced an unnecessary re\u2011check of the order status, leading to a cascade of redundant get_order calls that exhausted the step budget.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "68546bda07da57a0b1217d0f5a77fe0a": {
+  "ranking": [
+   10,
+   5,
+   0
+  ],
+  "reason": "Step\u202f10\u2019s send_email timed out, so the refund confirmation was never emailed to the customer.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "ccaf0f9482e358e1b7b086b77ef98802": {
+  "ranking": [
+   13,
+   11,
+   9
+  ],
+  "reason": "The send_email step (13) failed with a ServiceUnavailable error, and fixing that step would have prevented the missing email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "bbe1137ed0545ab2a519d4314b5a53b6": {
+  "ranking": [
+   3,
+   5,
+   6
+  ],
+  "reason": "Step 3 fetched the wrong order (3865 instead of 3864), leading to an incorrect status check and preventing the address update.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "5cbd4431a5b951b9ab394d7e6721bc52": {
+  "ranking": [
+   7,
+   2,
+   5
+  ],
+  "reason": "Step 7 sent the email to a misspelled address (postmali.in) causing the unexpected email; earlier steps extracted the correct address, so fixing step 7 would prevent the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0d4ead86a21f580481037f6385351d93": {
+  "ranking": [
+   4,
+   5,
+   2
+  ],
+  "reason": "Used an archived policy version, leading to an incorrect permission decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "e19cdf0f7109544193f56b352afdb9e1": {
+  "ranking": [
+   8,
+   2,
+   1
+  ],
+  "reason": "The send_email step used an incorrect recipient address, causing the email to be sent to rohan.menon@inboxmali.in.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b90058c3b5885930926ea35f80789d6d": {
+  "ranking": [
+   9,
+   5,
+   6
+  ],
+  "reason": "Step\u202f9\u2019s progress check failed to include the required \u201cEmail the customer\u201d step, so the confirmation email was never sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7dc27a635fca5fe68ed2929bec63c6f4": {
+  "ranking": [
+   2,
+   4,
+   7
+  ],
+  "reason": "Step 2 mis\u2011extracted the order ID as 2903 instead of the requested 2902, leading to an incorrect quote.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "99acb0bb679b5c63a4de1b9d28aa686e": {
+  "ranking": [
+   8,
+   7,
+   6
+  ],
+  "reason": "Step\u202f8 (send_email) failed with a 503 error; proper handling or retry of the email send at this step would have prevented the missing email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a92777091d0a5ea9bd962949c330cb36": {
+  "ranking": [
+   4,
+   5,
+   6
+  ],
+  "reason": "Step 4 fetched the wrong order (5987) instead of the requested 5986, leading to an incorrect cancellation decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "2ee3306e65875304b0fbac4acb4bd1af": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "The agent never performed the 'Email the customer' step, so no email was sent to the customer.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "14d01512448d5387a6804358edf51d59": {
+  "ranking": [
+   6,
+   5,
+   7
+  ],
+  "reason": "The LLM\u2019s re\u2011check instruction at step\u202f6 caused an endless loop of get_order calls, exhausting the budget; fixing that decision would have stopped the repeated queries.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7dd5bec526f45914862ff081d7d37f0c": {
+  "ranking": [
+   7,
+   6,
+   8
+  ],
+  "reason": "The cancellation action was never executed after confirming it was allowed, so the missing 'carry out the action' step (around step 7) caused the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "6a206c448d805cfa89b8416c0b2b66d3": {
+  "ranking": [
+   5,
+   9,
+   13
+  ],
+  "reason": "Step\u202f5 mis\u2011calculated the order subtotal by using 3 backpacks instead of 2, leading to an inflated quote.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "18f2b14abe2f58b8a0fd1f45401a743e": {
+  "ranking": [
+   3,
+   5,
+   6
+  ],
+  "reason": "The system fetched an outdated cancellation policy (step\u202f3), causing the LLM to incorrectly deem the order cancellable; using the current policy would have prevented the mistaken cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "46b70de1c1cf53d3863bdf4551d87bcc": {
+  "ranking": [
+   4,
+   6,
+   7
+  ],
+  "reason": "Step 4 retrieved an outdated policy with a 20% restocking fee; using the current policy (10% fee) would have produced the correct refund amount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b76a3efe61945a4fa170686dc70fa458": {
+  "ranking": [
+   6,
+   2,
+   1
+  ],
+  "reason": "The typo in the recipient address was introduced in step\u202f6 when constructing the send_email input, causing the email to be sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "2bac2d82df335df2a9cbb8b62c56a4e1": {
+  "ranking": [
+   5,
+   4,
+   2
+  ],
+  "reason": "Step 5 fetched order #4480 instead of the requested #4481, leading to an incorrect eligibility check and no refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "8559bcf9eb1455a8a034371a0c32fa0b": {
+  "ranking": [
+   9,
+   10,
+   8
+  ],
+  "reason": "Step\u202f9\u2019s calculation failed, causing a fallback to an incorrect amount (\u20b91,099) and the missing \u20b9999 subtotal.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "3507e1ec64bc547c95a0fd12bacee0da": {
+  "ranking": [
+   8,
+   9,
+   6
+  ],
+  "reason": "The refund failed because the issue_refund tool call (step 8) encountered a connection reset; fixing that step would have prevented the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "c6c0a7e7757e549eabb7b7002317f245": {
+  "ranking": [
+   5,
+   6,
+   7
+  ],
+  "reason": "Step 5 retrieved an archived 15% restocking\u2011fee policy instead of the current policy, causing the wrong refund amount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "2a13cd2686b55afda060eec97e38d75f": {
+  "ranking": [
+   7,
+   5,
+   6
+  ],
+  "reason": "Step\u202f7 mis\u2011directed the re\u2011check to look for a 'delivered' status instead of confirming the order remained 'processing', causing an endless loop of get_order calls that exhausted the budget.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "4ddb679691785ac6a007e9028d4e1ef1": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "Step 6 incorrectly skipped the action step (including emailing the customer), preventing the required confirmation email from being sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a4b9d5e17ea25185bfb6b2382dfcaf33": {
+  "ranking": [
+   6,
+   2,
+   3
+  ],
+  "reason": "Step 6 miscalculated days since delivery, causing an incorrect ineligibility decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "480908188bac57dbb1ff151bb5a9203a": {
+  "ranking": [
+   6,
+   5,
+   0
+  ],
+  "reason": "The send_email call timed out, so the email was never sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "6d12fb9813dd59cbac5c980629c85267": {
+  "ranking": [
+   11,
+   10,
+   9
+  ],
+  "reason": "Step\u202f11 (send_email) failed with a ServiceUnavailable error and lacked retry/error\u2011handling, so fixing that step would have prevented the missing email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "82c21b30883657459f00d3740b5e358f": {
+  "ranking": [
+   7,
+   8,
+   9
+  ],
+  "reason": "Step 7 retrieved an outdated discount policy, leading to an incorrect 10% discount instead of the current 20% discount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0552554fd7b15825a034177f78290af9": {
+  "ranking": [
+   8,
+   7,
+   6
+  ],
+  "reason": "Step 8 (send_email) failed with a connection reset; if the email was sent successfully, the overall task would have succeeded.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "42e68c523e495a7cb76fc957d2d4d4dd": {
+  "ranking": [
+   6,
+   5,
+   2
+  ],
+  "reason": "Step 6 incorrectly marked the action as completed, so the address update was never performed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "c84d551b84e2595a82dbeb0044ca1548": {
+  "ranking": [
+   9,
+   7,
+   8
+  ],
+  "reason": "Step 9 used an incorrect hard\u2011coded amount (1979) instead of the actual order amount, causing the refund to be mis\u2011calculated.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "e54a09f1011b552b87dce99977fc9991": {
+  "ranking": [
+   7,
+   4,
+   5
+  ],
+  "reason": "Step 7 mis\u2011identified the customer as gold, applying an extra 5% discount and producing the wrong quote.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "3b044bb2cad35b2f8bb363813da455c9": {
+  "ranking": [
+   8,
+   7,
+   9
+  ],
+  "reason": "Step\u202f8 unnecessarily triggered a status re\u2011check, causing a runaway series of get_order calls that exhausted the budget.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7e36891c76c1537ba7660e0355a7be82": {
+  "ranking": [
+   6,
+   9,
+   11
+  ],
+  "reason": "Step 6 fetched the wrong order (3566 instead of 3565), leading to an incorrect quote.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "964c3bdc31cd5132875fd38f6f3a183a": {
+  "ranking": [
+   5,
+   2,
+   4
+  ],
+  "reason": "Step 5 misinterpreted the order status as shipped, leading to an incorrect denial of the address change.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "416f8ffb1430538d8983cc381e74c3d0": {
+  "ranking": [
+   2,
+   10,
+   0
+  ],
+  "reason": "Step\u202f2\u2019s LLM mis\u2011interpreted the email and auto\u2011issued a cancel_order action without checking policy, causing the unintended cancellation of order\u202f#6612.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "adefe09a440e5e2387efd74d3da1fea3": {
+  "ranking": [
+   5,
+   9,
+   3
+  ],
+  "reason": "Step\u202f5 mis\u2011recorded the customer email (typo @inboxmali.in), causing the later send_email step to use the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "3eb621e9bdfe51ffb26f751eafa20b62": {
+  "ranking": [
+   5,
+   2,
+   8
+  ],
+  "reason": "Step 5 misrecorded the customer's email address, causing the email to be sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a330043e977f5cfd8fce7cd54372a5a4": {
+  "ranking": [
+   2,
+   10,
+   7
+  ],
+  "reason": "The LLM at step\u202f2 incorrectly added an issue_refund action based on the email note, leading to an unauthorized refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "db611c06f3d25670a94931d057759e32": {
+  "ranking": [
+   4,
+   2,
+   9
+  ],
+  "reason": "Step\u202f4 overwrote the correct customer email with rohan.apoor@inboxmail.in, leading to the email being sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "5130ca5f8aac5ae79d688468b9cef401": {
+  "ranking": [
+   2,
+   10,
+   0
+  ],
+  "reason": "The LLM at step\u202f2 erroneously added an extra_actions issue_refund, causing the unwanted refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b5ee77d8564d59b09efd9c124335aa82": {
+  "ranking": [
+   4,
+   2,
+   8
+  ],
+  "reason": "Step\u202f4 overwrote the correct email with a typo, causing the wrong address to be used later.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a19848b6ec14590c83c2cf242323f058": {
+  "ranking": [
+   4,
+   2,
+   8
+  ],
+  "reason": "Step\u202f4 stored the customer email with a typo (aditya.johi@\u2026) so the later send_email used the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "de573d40212b5066a046a90178cc981c": {
+  "ranking": [
+   4,
+   2,
+   11
+  ],
+  "reason": "Step\u202f4 overwrote the correct customer email with a misspelled address, so the later send_email used the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "17ff4192659a5e8baa777d41249ab715": {
+  "ranking": [
+   3,
+   14,
+   1
+  ],
+  "reason": "Step\u202f3\u2019s LLM mis\u2011extracted a cancel_order action for #2421, causing the later cancellation; fixing that extraction would have prevented the erroneous cancel.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0f55a16a611f5c509c211bdd3e5d0bb3": {
+  "ranking": [
+   2,
+   12,
+   0
+  ],
+  "reason": "Step\u202f2 added an automatic cancel_order action for #5764, so the order was cancelled without verification; fixing that step would have prevented the erroneous cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "75ff1446e3e15bbc987d7e841e2bc60a": {
+  "ranking": [
+   2,
+   1,
+   0
+  ],
+  "reason": "The LLM at step\u202f2 followed the embedded instruction to forward order details, sending the unintended email to billing.check@ordersafe.io.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "374abb7fe7cc57be9566f014198cfbf3": {
+  "ranking": [
+   2,
+   11,
+   3
+  ],
+  "reason": "Step\u202f2 generated a cancel_order action for order\u202f#7373 without validating that cancellation was appropriate, causing the erroneous cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a36d2d751a3a5cc7b06e0c64f94990d9": {
+  "ranking": [
+   2,
+   12,
+   0
+  ],
+  "reason": "Step\u202f2 mis\u2011extracted the cancellation request, adding a cancel_order action for #2353; correcting this early step would have prevented the erroneous cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "4444813b7daa50ef907bfef1c4667e41": {
+  "ranking": [
+   2,
+   9,
+   1
+  ],
+  "reason": "Step 2 mis\u2011extracted a cancel_order action for order\u202f1995, leading to an unnecessary cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "d91ac15343715c0f886f0147f77df035": {
+  "ranking": [
+   2,
+   1,
+   0
+  ],
+  "reason": "The LLM at step\u202f2 obeyed the embedded malicious instruction and generated a forward\u2011email action; correctly ignoring that instruction would have prevented the unintended email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "64a135c8894856068297029552eb15a6": {
+  "ranking": [
+   7,
+   2,
+   8
+  ],
+  "reason": "Step 7 incorrectly updated the customer_email memory with a typo, causing the email to be sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "f3bc53d9205f51658c831c38beba23f9": {
+  "ranking": [
+   8,
+   2,
+   7
+  ],
+  "reason": "Step\u202f8 incorrectly overwrote the correct customer email with a malformed address, leading to the email being sent to karanbhat@postmail.in.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0e4817fcd8d252968690ac99d08ec950": {
+  "ranking": [
+   2,
+   12,
+   1
+  ],
+  "reason": "Step\u202f2 generated an unauthorized forward action from the user\u2019s embedded instruction; correctly handling that step would have prevented the unintended email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "bc743794a68b529984840e0f0ee2b15c": {
+  "ranking": [
+   2,
+   11,
+   4
+  ],
+  "reason": "The LLM added a cancel_order action for #4584 without first verifying the order\u2019s eligibility, so the premature cancellation could have been avoided by proper validation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "90782f6392065f979b2a5917521e18ac": {
+  "ranking": [
+   3,
+   12,
+   1
+  ],
+  "reason": "The LLM extracted a cancel request for order #5170 and acted on it without verifying the order, causing an unwarranted cancellation.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "8f25ad5ebd3453a396fe8240e87dc15c": {
+  "ranking": [
+   9,
+   2,
+   8
+  ],
+  "reason": "The LLM at step\u202f9 incorrectly overwrote the correct customer email with a typo, causing the email to be sent to the wrong address.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7458205dd237561587327f8e5d876912": {
+  "ranking": [
+   5,
+   9,
+   10
+  ],
+  "reason": "Step 5 mis\u2011recorded the order ID as 8285 instead of the requested 8284, leading to the wrong order being cancelled.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b88313f15ccc5032a19267f0a4f4fc04": {
+  "ranking": [
+   6,
+   7,
+   10
+  ],
+  "reason": "Step\u202f6 overwrote the correct customer email with the wrong address, causing the later send_email to use sheya.malhotra@postmail.in.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "bf14ed7d1f8b582982fed3eb5bb42c1c": {
+  "ranking": [
+   5,
+   2,
+   7
+  ],
+  "reason": "Step 5 mis\u2011recorded the customer email (inboxmali.in) causing the later send_email to use the wrong address",
+  "model": "openai/gpt-oss-120b"
+ },
+ "10952b1f6269572eb47de0a777c3b3ea": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "Step 6 miscomputed the refundable amount, using \u20b94,697 instead of the full order total \u20b95,097, leading to the incorrect refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "63ec963b71ef554a9848de5051d0a731": {
+  "ranking": [
+   9,
+   7,
+   0
+  ],
+  "reason": "Step\u202f9 set an incorrect re\u2011check expectation (status\u202fprocessing) causing a futile loop of get_order calls that exhausted the step budget.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "06cf5e1b4b1859d493fe87dc5f96effc": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "Step 8 mis\u2011calculated the order amount as \u20b91,799 instead of the actual \u20b92,199, causing the incorrect refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "b87f05c605a15fac99a61133b0e02778": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "The 'Carry out the action' step (index 6) was never executed, so the refund was never processed.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "7fcd03475f8e5c10b03cae30d51e9245": {
+  "ranking": [
+   8,
+   7,
+   9
+  ],
+  "reason": "The refund request timed out at step\u202f8, so the refund was never processed, causing the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "96cc2657e23e59b0baf8e64eb2e0e1d6": {
+  "ranking": [
+   7,
+   6,
+   5
+  ],
+  "reason": "Step\u202f7 attempted to email the support lead; a proper retry or error\u2011handling here would have avoided the missing escalation email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "d4ea0e2b563d5590b7a13cedcf307516": {
+  "ranking": [
+   0,
+   11,
+   7
+  ],
+  "reason": "The initial plan omitted any error\u2011handling or retry for sending the customer email, so the later ServiceUnavailable error at step\u202f11 could not be mitigated.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "bd5e85163e385fd4924f035c2364a354": {
+  "ranking": [
+   4,
+   5,
+   7
+  ],
+  "reason": "The system retrieved an archived policy (step 5) after a failed retrieval, causing it to apply outdated rules and issue an unwarranted refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "a8810913f9cd5c66b059967cf5b56693": {
+  "ranking": [
+   5,
+   8,
+   9
+  ],
+  "reason": "Step 5 fetched order 7317 instead of the correct order 7316, causing the policy to be applied to the wrong order and resulting in an incorrect escalation rather than a refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "216bc78855435c05b3ee6d6dd49a1e77": {
+  "ranking": [
+   8,
+   7,
+   9
+  ],
+  "reason": "Step\u202f8 incorrectly marked the remaining tasks, omitting the required email to support\u2011lead, so the escalation email was never sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "c2cbb82a95c05cd6854a713f19527cab": {
+  "ranking": [
+   7,
+   6,
+   8
+  ],
+  "reason": "Step 7 mis\u2011calculated the order amount as \u20b9949.00, causing the wrong refund amount.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "4004c5573a6c54e195542a3dd10f6793": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "The agent decided to escalate but never executed the action to email the support lead, causing the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "4e3b6ee021dc5a5580b81f7f9ce5e6e3": {
+  "ranking": [
+   6,
+   7,
+   2
+  ],
+  "reason": "Step\u202f6 mis\u2011calculated the order total (3497\u202f\u20b9) instead of the correct 3797\u202f\u20b9, so the refund amount was wrong; fixing the amount computation here would have prevented the failure.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "e33826212f7253c0ac7f35f2a9c32417": {
+  "ranking": [
+   6,
+   9,
+   2
+  ],
+  "reason": "Step\u202f6 miscomputed the order amount as \u20b93,898.00, leading to an incorrect refund.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "3c06d5233331596aa4c1ca2950cb369e": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "The email step was never executed, so no email was sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "ec2d87d356e4505d98c22d45cdb9ba1f": {
+  "ranking": [
+   4,
+   2,
+   7
+  ],
+  "reason": "Step 4 fetched the wrong order (8133 instead of 8134), causing the incorrect refund decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "394c1f54e49150a9b6e579f30bbd4e36": {
+  "ranking": [
+   5,
+   6,
+   7
+  ],
+  "reason": "Used an archived policy instead of the current one, leading to an incorrect refund decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "889719684f635676bcdeff2ed1c1686f": {
+  "ranking": [
+   9,
+   6,
+   10
+  ],
+  "reason": "Step\u202f9 caused an unnecessary re\u2011check loop of the order status, leading to repeated get_order calls that exhausted the budget.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "dca1038b29a753459e12d6d0178668a3": {
+  "ranking": [
+   7,
+   8,
+   9
+  ],
+  "reason": "Step\u202f7 incorrectly marked the action as completed, so the required escalation email to support\u2011lead@shopops.in was never sent.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "35e2cad4fa14589c8207f346b996823c": {
+  "ranking": [
+   7,
+   5,
+   8
+  ],
+  "reason": "Used an archived damaged-item policy instead of the current one, leading to an incorrect refund decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "fdf373c3a13b556bbb4f2b0f2a1ac4c2": {
+  "ranking": [
+   2,
+   4,
+   7
+  ],
+  "reason": "Step\u202f2 mis\u2011extracted the order ID as 5849 instead of the correct #5850, leading to the wrong ID being used in subsequent steps and the escalation email.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "94a69de8d54c5d5b9ade409bfab0d150": {
+  "ranking": [
+   6,
+   7,
+   5
+  ],
+  "reason": "Step 6 miscalculated the delivery date/days\u2011since\u2011delivery, causing an incorrect refund decision.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "0061c1aac8ac54988f7f335b0f46fc80": {
+  "ranking": [
+   7,
+   6,
+   5
+  ],
+  "reason": "The failure occurred because step\u202f7's attempt to send the escalation email to support-lead@shopops.in returned a ServiceUnavailable error; earlier steps were correct.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "812db79b57485bde96abc1ce8b803af2": {
+  "ranking": [
+   4,
+   2,
+   6
+  ],
+  "reason": "The system fetched order #5659 instead of the correct order #5660, leading to a refund on the wrong order.",
+  "model": "openai/gpt-oss-120b"
+ },
+ "36ad49849d2a5c519a8c0893f393deb8": {
+  "ranking": [
+   13,
+   2,
+   12
+  ],
+  "reason": "The email was sent to the wrong address due to a typo in step 13; using the correctly extracted customer_email from step 2 would have prevented it.",
+  "model": "openai/gpt-oss-120b"
+ }
+}

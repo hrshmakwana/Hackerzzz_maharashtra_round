@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T09:29:56+00:00",
+ "generated_at": "2026-10-04T10:11:02+00:00",
  "model_version": "ranker-20261003-1348",
  "dataset": {
   "runs": 4998,
@@ -89,6 +89,9 @@
      "n": 0
     },
     "llm_judge2": {
+     "n": 0
+    },
+    "llm_judge3": {
      "n": 0
     },
     "first_error": {
@@ -284,7 +287,78 @@
      }
     },
     "llm_judge2": {
-     "n": 0
+     "n": 50,
+     "top1": 0.84,
+     "top3": 0.98,
+     "mrr": 0.9125,
+     "mean_step_distance": 0.16,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 1,
+       "n": 5
+      },
+      "calc_error": {
+       "top1": 0.8333,
+       "n": 6
+      },
+      "early_stop": {
+       "top1": 0.4545,
+       "n": 11
+      },
+      "hallucination": {
+       "top1": 1,
+       "n": 8
+      },
+      "ignored_error": {
+       "top1": 0.875,
+       "n": 8
+      },
+      "loop": {
+       "top1": 1,
+       "n": 4
+      },
+      "wrong_args": {
+       "top1": 1,
+       "n": 8
+      }
+     }
+    },
+    "llm_judge3": {
+     "n": 32,
+     "top1": 0.8438,
+     "top3": 1.0,
+     "mrr": 0.9167,
+     "mean_step_distance": 0.5,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 1,
+       "n": 3
+      },
+      "calc_error": {
+       "top1": 1,
+       "n": 4
+      },
+      "early_stop": {
+       "top1": 0.7778,
+       "n": 9
+      },
+      "hallucination": {
+       "top1": 1,
+       "n": 5
+      },
+      "ignored_error": {
+       "top1": 0.75,
+       "n": 4
+      },
+      "loop": {
+       "top1": 1,
+       "n": 2
+      },
+      "wrong_args": {
+       "top1": 0.6,
+       "n": 5
+      }
+     }
     },
     "first_error": {
      "n": 306,
@@ -439,6 +513,23 @@
      }
     },
     "llm_judge2": {
+     "n": 25,
+     "top1": 0.48,
+     "top3": 0.64,
+     "mrr": 0.5807,
+     "mean_step_distance": 0.52,
+     "per_type_top1": {
+      "prompt_injection": {
+       "top1": 0,
+       "n": 13
+      },
+      "state_corruption": {
+       "top1": 1,
+       "n": 12
+      }
+     }
+    },
+    "llm_judge3": {
      "n": 0
     },
     "first_error": {
@@ -566,6 +657,39 @@
      }
     },
     "llm_judge2": {
+     "n": 25,
+     "top1": 0.84,
+     "top3": 1.0,
+     "mrr": 0.92,
+     "mean_step_distance": 0.56,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 0.6667,
+       "n": 3
+      },
+      "early_stop": {
+       "top1": 0.6,
+       "n": 5
+      },
+      "hallucination": {
+       "top1": 1,
+       "n": 7
+      },
+      "ignored_error": {
+       "top1": 0.75,
+       "n": 4
+      },
+      "loop": {
+       "top1": 1,
+       "n": 2
+      },
+      "wrong_args": {
+       "top1": 1,
+       "n": 4
+      }
+     }
+    },
+    "llm_judge3": {
      "n": 0
     },
     "first_error": {
@@ -772,7 +896,8 @@
  "judge_runs": 99,
  "judge_models": {
   "llm_judge": "gemini-flash-lite-latest",
-  "llm_judge2": null
+  "llm_judge2": "openai/gpt-oss-120b",
+  "llm_judge3": "qwen/qwen3.8-27b"
  },
  "replay": {
   "n": 150,
@@ -812,5 +937,5 @@
    }
   }
  },
- "seconds": 9.6
+ "seconds": 10.0
 }
