@@ -1,9 +1,7 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google"
 
-import { TopBar } from "@/components/top-bar"
-import { Toaster } from "@/components/ui/sonner"
-import { TooltipProvider } from "@/components/ui/tooltip"
+import { SiteFooter, SiteHeader } from "@/components/site"
 
 import "./globals.css"
 
@@ -13,21 +11,20 @@ const jetbrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subset
 
 export const metadata: Metadata = {
   title: "Black Box",
-  description: "Flight recorder for AI agents. Record, blame, fork, prove.",
+  description: "Find the step that broke your AI agent, and prove it.",
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export const viewport: Viewport = {
+  themeColor: "#0B0B0F",
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col">
-        <TooltipProvider>
-          <TopBar />
-          {children}
-          <Toaster theme="dark" position="bottom-right" richColors />
-        </TooltipProvider>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className="flex min-h-dvh flex-col">
+        <SiteHeader />
+        <div className="flex-1">{children}</div>
+        <SiteFooter />
       </body>
     </html>
   )

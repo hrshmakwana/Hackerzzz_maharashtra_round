@@ -28,12 +28,12 @@ flowchart LR
 | Problem statement feature | Where it lives |
 |---|---|
 | Execution data | `blackbox_sdk/` recorder, `agent_sim/` ShopOps sandbox, 5,000 labelled runs |
-| Failure diagnosis | `ml/` LightGBM LambdaRank step ranker (Flight Deck blame heat) |
+| Failure diagnosis | `ml/` LightGBM LambdaRank step ranker ("Find the cause" on a run) |
 | Failure explanation | SHAP contributions + evidence sentences, optional Gemini incident report |
-| Checkpointed replay | content-addressed checkpoint after every step, "Replay from here" |
-| Alternative execution | fork editor (args, outputs, LLM decision, document, prompt), auto-fix, multiverse sweep |
+| Checkpointed replay | content-addressed checkpoint after every step; forks resume from it |
+| Alternative execution | edits to args, outputs, LLM decisions, documents or the prompt (API), auto-fix ("Fix this step and replay"), multiverse sweep |
 | Model evaluation | `make eval`: Top-1/Top-3/MRR vs four baselines, held-out fault types and task family |
-| Trace comparison | Multiverse view: aligned runs, split point, outcome change, steps and tokens saved |
+| Trace comparison | `/api/compare`: aligned runs, split point, outcome change, steps and tokens saved; before/after proof in the UI |
 
 ## Results
 
@@ -90,7 +90,7 @@ sleeps after ~15 minutes idle and re-seeds its database on start.
 | `agent_sim/` | ShopOps world, tools, tasks, scripted agent, faults, checker, replay, repair |
 | `ml/` | features, baselines, training, evaluation, SHAP evidence |
 | `backend/` | FastAPI app and services |
-| `frontend/` | Next.js UI: Hangar, Flight Deck, Multiverse view, Model Lab, Mission Control |
+| `frontend/` | Next.js UI: home, runs, run story (cause, fix, proof), results, live |
 | `tests/` | pytest suite (no ground-truth leakage, determinism, replay, API) |
 
 Built by Team Hackerzzz for Bit N Build 2026.

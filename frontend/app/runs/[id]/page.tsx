@@ -1,368 +1,243 @@
 "use client"
 
-import {
-  ArrowLeft, Check, Crosshair, FileText, GitBranch, Loader2, RotateCcw, ShieldCheck, ShieldX, Sparkles, Wand2, X,
-} from "lucide-react"
+import { ArrowLeft, Check, ChevronDown, Loader2, RotateCcw, Search, ShieldCheck, ShieldX, X } from "lucide-react"
 import Link from "next/link"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { Suspense, useEffect, useMemo, useState } from "react"
-import { toast } from "sonner"
+import { useParams } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 
-import { CanonBadge, ErrorNote, Loading, Panel, StatusBadge } from "@/components/bits"
-import { DemoCoach } from "@/components/demo-coach"
-import { ExecGraph } from "@/components/flight/exec-graph"
-import { ForkDrawer } from "@/components/flight/fork-drawer"
-import { Inspector } from "@/components/flight/inspector"
-import { Tape } from "@/components/flight/tape"
-import { Markdown } from "@/components/markdown"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { api, post, type Diagnosis, type ForkResult, type Meta, type Run, type SweepResult, type Verify } from "@/lib/api"
-import { FAMILY_LABEL, FAULT_LABEL, SPLIT_LABEL, label, pct, shortId } from "@/lib/format"
+import { Loading, Problem, StepList, visibleSteps, btnPrimary } from "@/components/kit"
+import { API_URL, api, post, type Diagnosis, type ForkResult, type Run, type Verify } from "@/lib/api"
+import { amountIn, capital, plainReason, TASK_TITLE } from "@/lib/plain"
 import { useApi } from "@/lib/use-api"
 import { cn } from "@/lib/utils"
 
-export default function FlightDeckPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <FlightDeck />
-    </Suspense>
-  )
-}
+type Stage = 1 | 2 | 3
 
-function FlightDeck() {
+export default function RunPage() {
   const { id } = useParams<{ id: string }>()
-  const router = useRouter()
-  const search = useSearchParams()
-  const demo = search.get("demo") === "1"
-  const runQ = useApi<Run>(`/runs/${id}`)
-  const meta = useApi<Meta>("/meta")
-  const run = runQ.data
-
+  const { data: run, error, reload } = useApi<Run>(`/runs/${id}`)
   const [diag, setDiag] = useState<Diagnosis | null>(null)
-  const [selected, setSelected] = useState<number | null>(null)
-  const [tab, setTab] = useState("io")
-  const [busy, setBusy] = useState<string | null>(null)
-  const [verify, setVerify] = useState<Verify | null>(null)
-  const [sweep, setSweep] = useState<SweepResult | null>(null)
-  const [report, setReport] = useState<string | null>(null)
-  const [reportOpen, setReportOpen] = useState(false)
-  const [forkOpen, setForkOpen] = useState(false)
-  const [demoStep, setDemoStep] = useState(1)
+  const [fix, setFix] = useState<ForkResult | null>(null)
+  const [busy, setBusy] = useState<"cause" | "fix" | null>(null)
+  const [problem, setProblem] = useState<string | null>(null)
+  const [reasoning, setReasoning] = useState(false)
+  const proofRef = useRef<HTMLElement>(null)
 
-  // adopt a cached diagnosis and pick a sensible step to show first
   useEffect(() => {
-    if (!run) return
-    /* eslint-disable react-hooks/set-state-in-effect -- sync local view state with the loaded run */
-    if (run.diagnosis && !diag) {
-      setDiag(run.diagnosis)
-      if (run.diagnosis.report_md) setReport(run.diagnosis.report_md)
-      if (demo) setDemoStep(2)
-    }
-    if (selected === null && run.steps.length) {
-      setSelected(run.diagnosis?.canon_event.idx ?? run.fork_step_idx ?? run.steps[run.steps.length - 1].idx)
-    }
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [run, diag, selected, demo])
+    if (fix) proofRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [fix])
 
-  // keep polling while a live run is still going
-  useEffect(() => {
-    if (run?.status !== "running") return
-    const t = setInterval(runQ.reload, 1000)
-    return () => clearInterval(t)
-  }, [run?.status, runQ.reload])
+  if (error) return <Problem message={error} onRetry={reload} />
+  if (!run) return <Loading />
 
-  const blame = useMemo(() => (diag ? new Map(diag.ranking.map((r) => [r.idx, r.prob])) : null), [diag])
-  const canon = diag?.canon_event.idx ?? null
-  const injected = diag?.ground_truth?.step ?? null
-  const step = run?.steps.find((s) => s.idx === selected) ?? null
-  const rank = diag?.ranking.find((r) => r.idx === selected) ?? null
+  const failed = run.status === "fail"
+  const rootIdx = diag?.canon_event.idx ?? null
+  const rootStep = run.steps.find((s) => s.idx === rootIdx)
+  const items = visibleSteps(run.steps, rootIdx, reasoning)
+  const stage: Stage = fix ? 3 : diag ? 2 : 1
 
-  const act = async <T,>(name: string, fn: () => Promise<T>): Promise<T | null> => {
-    setBusy(name)
+  const findCause = async () => {
+    setBusy("cause")
+    setProblem(null)
     try {
-      return await fn()
+      setDiag(await post<Diagnosis>(`/runs/${id}/diagnose`))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : String(e))
-      return null
+      setProblem(e instanceof Error ? e.message : String(e))
     } finally {
       setBusy(null)
     }
   }
 
-  const diagnose = async () => {
-    const d = await act("diagnose", () => post<Diagnosis>(`/runs/${id}/diagnose`))
-    if (!d) return
-    setDiag(d)
-    setSelected(d.canon_event.idx)
-    setTab("why")
-    if (demo) setDemoStep(2)
-  }
-
-  const openReport = async () => {
-    if (report) return setReportOpen(true)
-    const d = await act("report", () => post<Diagnosis>(`/runs/${id}/diagnose?report=true`))
-    if (d?.report_md) {
-      setReport(d.report_md)
-      setReportOpen(true)
+  const fixIt = async () => {
+    if (rootIdx === null) return
+    setBusy("fix")
+    setProblem(null)
+    try {
+      setFix(await post<ForkResult>(`/runs/${id}/autofix?step=${rootIdx}`))
+    } catch (e) {
+      setProblem(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(null)
     }
   }
-
-  const compareUrl = (fork: string) => `/compare?a=${id}&b=${fork}${demo ? "&demo=1" : ""}`
-
-  const autofix = async (at?: number) => {
-    const k = at ?? selected ?? canon
-    const r = await act("autofix", () => post<ForkResult>(`/runs/${id}/autofix${k !== null && k !== undefined ? `?step=${k}` : ""}`))
-    if (r) router.push(compareUrl(r.id))
-  }
-
-  const replay = async () => {
-    if (selected === null) return
-    const r = await act("replay", () => post<ForkResult>(`/runs/${id}/replay?step=${selected}`))
-    if (r) {
-      toast(`Replayed from step ${selected}: ${r.status === run?.status ? "same outcome" : "outcome changed"}`, {
-        description: `${r.savings.steps_reused} steps reused, ${r.savings.steps_rerun} re-run. ${r.outcome_detail}`,
-        action: { label: "Compare", onClick: () => router.push(compareUrl(r.id)) },
-      })
-      runQ.reload()
-    }
-  }
-
-  const doSweep = async () => {
-    const r = await act("sweep", () => post<SweepResult>(`/runs/${id}/sweep?top_k=3`))
-    if (r) {
-      setSweep(r)
-      if (!diag) {
-        const d = await api<Diagnosis>(`/runs/${id}/diagnosis`).catch(() => null)
-        if (d) setDiag(d)
-      }
-      runQ.reload()
-    }
-  }
-
-  const doVerify = async () => {
-    const v = await act("verify", () => api<Verify>(`/runs/${id}/verify`))
-    if (v) setVerify(v)
-  }
-
-  if (runQ.error) return <ErrorNote message={runQ.error} onRetry={runQ.reload} className="flex-1" />
-  if (!run) return <Loading label="Loading run…" className="flex-1" />
-
-  const failed = run.status === "fail"
 
   return (
-    <main className="mx-auto flex w-full max-w-[1600px] flex-col gap-3 px-4 py-3 lg:h-[calc(100dvh-3rem)]">
-      {/* header */}
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/runs" className="text-dim hover:text-foreground" aria-label="Back to all runs">
-              <ArrowLeft className="size-4" />
-            </Link>
-            <h1 className="font-heading text-xl font-semibold tracking-tight">{label(FAMILY_LABEL, run.task_family)}</h1>
-            <span className="font-mono text-xs text-dim">{shortId(run.id)}</span>
-            <StatusBadge status={run.status} />
-            <span className="text-xs text-dim">{label(SPLIT_LABEL, run.split)} split, {run.policy === "gemini" ? "Gemini agent" : "simulated agent"}</span>
-            <Link href={`/story/${run.id}`} className="text-xs text-orange hover:underline">Simple view</Link>
-            {run.parent_run_id && (
-              <Link href={`/compare?a=${run.parent_run_id}&b=${run.id}`} className="text-xs text-orange hover:underline">
-                Fork of {shortId(run.parent_run_id)} at step {run.fork_step_idx}
-              </Link>
-            )}
-          </div>
-          <p className="mt-1 line-clamp-1 text-sm text-dim" title={run.task_text}>{run.task_text}</p>
-          {run.status !== "running" && (
-            <p className={cn("mt-0.5 text-sm", failed ? "text-fail" : "text-success")}>
-              {failed ? "Failed: " : "Passed: "}
-              <span className="text-foreground/90">{run.outcome_detail}</span>
-            </p>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Button onClick={diagnose} disabled={!!busy || run.status === "running"} variant={diag ? "outline" : "default"}>
-            {busy === "diagnose" ? <Loader2 className="animate-spin" /> : <Crosshair />} Diagnose
-          </Button>
-          <ActionButton tip="Re-execute from the selected step without changes" onClick={replay} busy={busy === "replay"} disabled={!!busy || selected === null || run.status === "running"} icon={<RotateCcw />}>
-            Replay from here
-          </ActionButton>
-          <ActionButton tip="Edit the selected step and re-run only what follows" onClick={() => setForkOpen(true)} disabled={!!busy || selected === null || run.status === "running"} icon={<GitBranch />}>
-            Fork and fix
-          </ActionButton>
-          <ActionButton tip="Repair the selected step from evidence in the trace, then fork" onClick={() => autofix()} busy={busy === "autofix"} disabled={!!busy || run.status === "running"} icon={<Wand2 />}>
-            Auto-fix
-          </ActionButton>
-          <ActionButton tip="Fork at each of the top 3 blamed steps with auto-fix and see which flips the outcome" onClick={doSweep} busy={busy === "sweep"} disabled={!!busy || run.status === "running"} icon={<Sparkles />}>
-            Multiverse sweep
-          </ActionButton>
-          <ActionButton tip="Recompute the hash chain over every stored step" onClick={doVerify} busy={busy === "verify"} disabled={!!busy} icon={verify ? (verify.valid ? <ShieldCheck className="text-success" /> : <ShieldX className="text-fail" />) : <ShieldCheck />}>
-            {verify ? (verify.valid ? "Integrity verified" : `Tampered at step ${verify.broken_at}`) : "Verify integrity"}
-          </ActionButton>
-        </div>
-      </header>
-
-      {demo && (
-        <DemoCoach
-          step={demoStep}
-          busy={!!busy}
-          action={demoStep === 1 ? "Diagnose" : demoStep === 2 ? "Show me the proof" : demoStep === 3 ? `Auto-fix step ${canon}` : undefined}
-          onAction={demoStep === 1 ? diagnose : demoStep === 2 ? () => setDemoStep(3) : demoStep === 3 ? () => autofix(canon ?? undefined) : undefined}
-        >
-          {demoStep === 1 && <>This refund failed at the very end. Ask the trained model which earlier step actually caused it.</>}
-          {demoStep === 2 && <>The model blames step {canon}. The tape shows blame per step; the panel on the right lists the evidence and what drove the score.</>}
-          {demoStep === 3 && <>Don&apos;t take the model&apos;s word for it. Fork the run at step {canon}, repair just that step, and re-run only what follows.</>}
-        </DemoCoach>
-      )}
-
-      {diag && (
-        <CanonBanner diag={diag} runFailed={failed} onApply={() => autofix(diag.canon_event.idx)} busy={busy === "autofix"} onReport={openReport} reportBusy={busy === "report"} />
-      )}
-
-      {sweep && <SweepStrip sweep={sweep} runId={id} demo={demo} />}
-
-      <div className="grid min-h-[560px] flex-1 gap-3 lg:min-h-0 lg:grid-cols-[290px_minmax(0,1fr)_370px]">
-        <Panel title={<span className="flex items-center gap-2">Tape <span className="font-normal text-dim">{run.steps.length} steps</span></span>}
-          action={diag ? <span className="text-xs text-dim">blame</span> : null}>
-          <Tape steps={run.steps} blame={blame} canon={canon} injected={injected} selected={selected} onSelect={setSelected} />
-        </Panel>
-        <Panel title="Execution graph" className="min-h-[420px]" action={<span className="text-xs text-dim">dashed lines show where values flow</span>}>
-          <ExecGraph steps={run.steps} edges={run.edges} blame={blame} canon={canon} selected={selected} injected={injected} onSelect={setSelected} />
-        </Panel>
-        <Panel title="Step inspector">
-          <Inspector runId={id} step={step} rank={rank} diagnosed={!!diag} tab={tab} onTab={setTab} />
-        </Panel>
+    <main className="mx-auto max-w-3xl px-5 pt-8 md:px-8 md:pt-12">
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <Link href="/runs" className="flex items-center gap-1.5 text-dim hover:text-ink">
+          <ArrowLeft className="size-4" /> All runs
+        </Link>
+        <span className="font-mono text-xs text-dim">Run {run.id.startsWith("hero-") ? run.id.slice(5) : run.id.slice(0, 8)}</span>
       </div>
 
-      <ForkDrawer
-        open={forkOpen}
-        onOpenChange={setForkOpen}
-        runId={id}
-        step={step}
-        meta={meta.data}
-        onForked={() => runQ.reload()}
-      />
+      <h1 className="mt-6 text-[26px] leading-9 font-medium md:text-[32px] md:leading-10">
+        {TASK_TITLE[run.task_family] ?? "Agent run"}
+      </h1>
 
-      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="font-heading">Incident report</DialogTitle>
-            <DialogDescription>
-              Written from the model&apos;s ranking and the evidence above
-              {diag?.report_source === "template" ? " (template: Gemini is not configured)" : ""}.
-            </DialogDescription>
-          </DialogHeader>
-          {report ? <Markdown text={report} /> : <Loading />}
-        </DialogContent>
-      </Dialog>
+      <div className={cn("mt-4 flex items-start gap-2.5 rounded-lg border px-4 py-3 text-[15px]",
+        failed ? "border-fail/30 bg-fail/10" : run.status === "success" ? "border-success/30 bg-success/10" : "border-orange/30 bg-orange/10")}>
+        {failed ? <X className="mt-0.5 size-4 shrink-0 text-fail" /> : <Check className="mt-0.5 size-4 shrink-0 text-success" />}
+        <p>
+          {failed ? `The agent got it wrong: ${run.outcome_detail}` : run.status === "success" ? `The agent got it right: ${run.final_answer}` : "This run is still in progress."}
+        </p>
+      </div>
+
+      {run.parent_run_id && (
+        <p className="mt-3 text-sm text-dim">
+          This is a replay of{" "}
+          <Link href={`/runs/${run.parent_run_id}`} className="text-ink underline-offset-4 hover:underline">another run</Link>{" "}
+          with one step fixed.
+        </p>
+      )}
+
+      {failed && <Stages stage={stage} />}
+
+      <section className="mt-10">
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <h2 className="text-lg font-medium">What the agent did</h2>
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-dim">
+            <input type="checkbox" className="size-3.5 accent-[#FF6A13]" checked={reasoning} onChange={(e) => setReasoning(e.target.checked)} />
+            Show its reasoning
+          </label>
+        </div>
+        <StepList
+          items={items}
+          rootIdx={rootIdx}
+          reason={diag ? plainReason(rootStep, diag.ranking[0]?.evidence ?? []) : undefined}
+          confidence={diag?.canon_event.prob}
+        />
+      </section>
+
+      {failed && !fix && (
+        <div className="mt-8">
+          {!diag ? (
+            <button onClick={findCause} disabled={busy !== null} className={cn(btnPrimary, "w-full py-3.5 text-base")}>
+              {busy === "cause" ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Find the cause
+            </button>
+          ) : (
+            <button onClick={fixIt} disabled={busy !== null} className={cn(btnPrimary, "w-full py-3.5 text-base")}>
+              {busy === "fix" ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />} Fix this step and replay
+            </button>
+          )}
+          <p className="mt-2 text-center text-sm text-dim">
+            {!diag
+              ? "The mistake shows at the end. A trained model checks every step to find where it started."
+              : "Black Box restarts the run from just before this step, fixes it, and replays the rest."}
+          </p>
+          {problem && <p className="mt-3 text-center text-sm text-fail">{problem}</p>}
+        </div>
+      )}
+
+      {fix && <Proof ref={proofRef} run={run} fix={fix} />}
+
+      <DevDetails run={run} rootIdx={rootIdx} />
     </main>
   )
 }
 
-function ActionButton({ children, tip, icon, busy, ...props }: {
-  children: React.ReactNode
-  tip: string
-  icon: React.ReactNode
-  busy?: boolean
-  onClick: () => void
-  disabled?: boolean
-}) {
+function Stages({ stage }: { stage: Stage }) {
+  const names = ["Find the cause", "Fix it", "Proof"]
   return (
-    <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" {...props} />}>
-        {busy ? <Loader2 className="animate-spin" /> : icon}
-        {children}
-      </TooltipTrigger>
-      <TooltipContent>{tip}</TooltipContent>
-    </Tooltip>
+    <ol className="mt-8 grid grid-cols-3 gap-2 rounded-lg border bg-surface p-2 text-xs sm:text-sm" aria-label="Progress">
+      {names.map((n, i) => {
+        const state = i + 1 < stage || stage === 3 ? "done" : i + 1 === stage ? "now" : "next"
+        return (
+          <li key={n} aria-current={state === "now" ? "step" : undefined}
+            className={cn("flex items-center gap-2 rounded px-2 py-2 sm:px-3", state === "now" && "bg-raised")}>
+            <span className={cn("size-2 shrink-0 rounded-full", state === "next" ? "bg-line" : "bg-orange")} />
+            <span className={cn(state === "next" ? "text-dim" : "text-ink")}>
+              {i + 1}. {n}
+            </span>
+          </li>
+        )
+      })}
+    </ol>
   )
 }
 
-function CanonBanner({ diag, runFailed, onApply, busy, onReport, reportBusy }: {
-  diag: Diagnosis
-  runFailed: boolean
-  onApply: () => void
-  busy: boolean
-  onReport: () => void
-  reportBusy: boolean
-}) {
-  const ce = diag.canon_event
-  const gt = diag.ground_truth
-  const hit = gt ? gt.step === ce.idx : null
+function Proof({ run, fix, ref }: { run: Run; fix: ForkResult; ref: React.Ref<HTMLElement> }) {
+  const amountCase = /amount/.test(run.outcome_detail)
+  const before = amountCase ? amountIn(run.final_answer) : null
+  const after = amountCase ? amountIn(fix.final_answer) : null
+  const ok = fix.status === "success"
   return (
-    <section className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-orange/40 bg-card px-4 py-2.5" aria-live="polite">
-      <CanonBadge />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm">
-          <span className="font-heading font-semibold">Step {ce.idx}</span>
-          {!ce.headline.startsWith(ce.name) && <span className="ml-2 font-mono text-xs text-dim">{ce.name}</span>}
-          <span className="ml-2 text-foreground/90">{ce.headline}</span>
-        </p>
-        {!runFailed && <p className="text-xs text-dim">This run succeeded, so this is only the step the model trusts least.</p>}
-        {diag.suggested_fix && runFailed && (
-          <p className="mt-0.5 text-xs text-dim">Suggested fix: {diag.suggested_fix.explanation}</p>
+    <section ref={ref} className="rise mt-12 scroll-mt-20">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-lg font-medium">Proof of fix</h2>
+        {ok && (
+          <span className="flex items-center gap-1.5 rounded border border-success/30 bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+            <Check className="size-3.5" /> Verified outcome
+          </span>
         )}
       </div>
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          <div className="font-heading text-2xl font-semibold leading-none tabular-nums text-orange">{pct(ce.prob)}</div>
-          <div className="text-[11px] text-dim">blame</div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border bg-surface p-5">
+          <p className="flex items-center justify-between text-sm text-dim">
+            Before the fix <X className="size-4 text-fail" aria-hidden />
+          </p>
+          <p className="mt-3 font-heading text-2xl font-semibold">{before ?? "Wrong outcome"}</p>
+          <p className="mt-1 text-sm text-fail">{before ? "Wrong amount" : capital(run.outcome_detail)}</p>
         </div>
-        {gt && (
-          <div className={cn("rounded-md border px-2 py-1 text-xs", hit ? "border-success/40 text-success" : "border-fail/40 text-fail")}
-            title="The step where the fault was injected (ground truth, never shown to the model)">
-            <span className="flex items-center gap-1">
-              {hit ? <Check className="size-3.5" /> : <X className="size-3.5" />}
-              Injected at step {gt.step}
-            </span>
-            <span className="block text-dim">{label(FAULT_LABEL, gt.type)}</span>
-          </div>
-        )}
-        <Button variant="outline" size="sm" onClick={onReport} disabled={reportBusy}>
-          {reportBusy ? <Loader2 className="animate-spin" /> : <FileText />} Incident report
-        </Button>
-        {diag.suggested_fix && runFailed && (
-          <Button size="sm" onClick={onApply} disabled={busy}>
-            {busy ? <Loader2 className="animate-spin" /> : <Wand2 />} Apply fix and prove it
-          </Button>
-        )}
+        <div className={cn("rounded-lg border p-5", ok ? "border-success/30 bg-success/[0.06]" : "bg-surface")}>
+          <p className="flex items-center justify-between text-sm text-dim">
+            After the fix {ok ? <Check className="size-4 text-success" aria-hidden /> : <X className="size-4 text-fail" aria-hidden />}
+          </p>
+          <p className="mt-3 font-heading text-2xl font-semibold">{after ?? (ok ? "Correct outcome" : "Still wrong")}</p>
+          <p className={cn("mt-1 text-sm", ok ? "text-success" : "text-fail")}>{ok ? "Every check passed" : capital(fix.outcome_detail)}</p>
+        </div>
       </div>
+      <p className="mt-4 text-center text-sm text-dim">
+        Everything before the fixed step was reused from the recording. Only the steps after it were replayed.
+      </p>
+      {fix.fix?.explanation && <p className="mt-1 text-center text-sm text-dim">The fix: {fix.fix.explanation}</p>}
     </section>
   )
 }
 
-function SweepStrip({ sweep, runId, demo }: { sweep: SweepResult; runId: string; demo: boolean }) {
+function DevDetails({ run, rootIdx }: { run: Run; rootIdx: number | null }) {
+  const [open, setOpen] = useState(false)
+  const [verify, setVerify] = useState<Verify | null>(null)
+  const step = run.steps.find((s) => s.idx === rootIdx) ?? null
+
+  useEffect(() => {
+    if (open && !verify) api<Verify>(`/runs/${run.id}/verify`).then(setVerify).catch(() => null)
+  }, [open, verify, run.id])
+
   return (
-    <section className="rounded-lg border bg-card px-4 py-2.5">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="text-sm font-medium">Multiverse sweep</h2>
-        <p className="text-xs text-dim">
-          {sweep.confirmed_step !== null
-            ? `Fixing step ${sweep.confirmed_step} flips the outcome: Canon Event confirmed.`
-            : "No single repaired step flipped the outcome."}
-        </p>
-      </div>
-      <ol className="grid gap-2 md:grid-cols-3">
-        {sweep.universes.map((u) => (
-          <li key={u.step} className={cn("rounded-md border px-3 py-2 text-xs", u.step === sweep.confirmed_step ? "border-orange/60 bg-orange/[0.06]" : "bg-background")}>
-            <div className="flex items-center justify-between gap-2">
-              <span>
-                <span className="text-dim">Universe {u.rank}</span>
-                <span className="ml-2 font-mono text-foreground">step {u.step} {u.name}</span>
-              </span>
-              <span className="font-mono text-dim">{pct(u.prob)}</span>
+    <section className="mt-12 rounded-lg border bg-surface">
+      <button onClick={() => setOpen(!open)} aria-expanded={open}
+        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left text-sm text-dim hover:text-ink">
+        Developer details
+        <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="space-y-4 border-t px-5 py-4 text-sm">
+          <p className="flex items-center gap-2">
+            {verify ? (
+              verify.valid ? (
+                <><ShieldCheck className="size-4 text-success" /> Recording verified: all {verify.steps_checked} steps are untouched.</>
+              ) : (
+                <><ShieldX className="size-4 text-fail" /> Recording was changed at step {verify.broken_at}.</>
+              )
+            ) : (
+              <span className="text-dim">Checking the recording…</span>
+            )}
+          </p>
+          {step ? (
+            <div>
+              <p className="mb-1.5 text-dim">Raw data of the root-cause step ({step.name})</p>
+              <pre className="max-h-72 overflow-auto rounded border bg-bg p-3 font-mono text-xs leading-5 text-ink/90">
+                {JSON.stringify({ input: step.input, output: step.output, error: step.error }, null, 2)}
+              </pre>
             </div>
-            <p className="mt-1 line-clamp-2 text-dim">{u.fix ? u.fix.explanation : u.note}</p>
-            <div className="mt-1.5 flex items-center justify-between">
-              {u.status ? <StatusBadge status={u.status} /> : <span className="text-dim">not forked</span>}
-              {u.fork_id && (
-                <Link href={`/compare?a=${runId}&b=${u.fork_id}${demo ? "&demo=1" : ""}`} className="text-orange hover:underline">
-                  Compare
-                </Link>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
+          ) : (
+            <p className="text-dim">Find the cause to see the raw data of the step that caused it.</p>
+          )}
+          <a href={`${API_URL.replace(/\/api$/, "")}/docs`} target="_blank" rel="noreferrer" className="inline-block text-orange hover:underline">
+            Open the API docs
+          </a>
+        </div>
+      )}
     </section>
   )
 }

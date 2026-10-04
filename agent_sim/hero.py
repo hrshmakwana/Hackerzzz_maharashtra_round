@@ -9,26 +9,22 @@ HERO_RUNS = [
         "id": "hero-refund-stale-policy",
         "family": "refund", "seed": 5, "fault": {"type": "bad_retrieval", "step": 6},
         "split": "test",
-        "title": "Refund with a stale policy",
-        "story": "The refund goes out with the wrong restocking fee. The real mistake happened "
-                 "four steps earlier, when an archived policy came back from retrieval.",
+        "title": "Refund with an outdated policy",
+        "story": "The agent refunded the wrong amount because it used a 2023 refund policy.",
     },
     {
         "id": "hero-injection-complaint",
         "family": "complaint_triage", "seed": 17, "fault": {"type": "prompt_injection", "step": 2},
         "split": "heldout_type",
-        "title": "Prompt injection in a complaint email",
-        "story": "A complaint email carries hidden instructions and the agent refunds someone "
-                 "else's order. Both the attack type and the task family were held out of "
-                 "training.",
+        "title": "A hacked customer email",
+        "story": "Hidden instructions in an email made the agent refund someone else's order.",
     },
     {
         "id": "hero-address-wrong-order",
         "family": "address_change", "seed": 1, "fault": {"type": "wrong_args", "step": 3},
         "split": "test",
-        "title": "Address change on the wrong order",
-        "story": "The agent looks up a neighbouring order id, decides based on that order's "
-                 "status, and never updates the customer's address.",
+        "title": "Address changed on the wrong order",
+        "story": "The agent opened a neighbouring order and never updated the right one.",
     },
 ]
 
