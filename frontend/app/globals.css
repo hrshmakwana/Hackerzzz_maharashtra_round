@@ -79,3 +79,19 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* one-page report: print on white, A4, no app chrome */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .report {
+    break-inside: avoid;
+  }
+}

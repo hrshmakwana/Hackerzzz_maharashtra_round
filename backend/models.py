@@ -88,3 +88,15 @@ class ForkJob(SQLModel, table=True):
     request: Any = Field(default=None, sa_column=Column(JSON))
     result: Any = Field(default=None, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=utcnow)
+
+
+class AIReview(SQLModel, table=True):
+    """One AI's independent pick for a run's root cause (kept for the live leaderboard)."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    run_id: str = Field(index=True)
+    reviewer: str = Field(index=True)
+    model: str = ""
+    step: Optional[int] = None
+    reason: str = ""
+    created_at: datetime = Field(default_factory=utcnow)

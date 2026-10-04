@@ -10,13 +10,13 @@ from sqlmodel import Session, select
 
 from agent_sim.faults import FAULT_TYPES, HELDOUT_FAULT_TYPES
 from agent_sim.hero import HERO_RUNS
-from agent_sim.llm import gemini_available, reviewers
+from agent_sim.llm import MAKERS, gemini_available, model_label, reviewers
 from agent_sim.tasks import FAMILIES, HELDOUT_FAMILY
 from agent_sim.world import POLICY_DOCS
 from ml.common import ARTIFACTS, load_models, models_available
 
 from ..db import get_session
-from ..models import Run
+from ..models import AIReview, Diagnosis, Run
 
 router = APIRouter(tags=["eval"])
 
@@ -104,3 +104,45 @@ def demo(session: Session = Depends(get_session)) -> dict:
                     "available": run is not None,
                     "status": run.status if run else None})
     return {"runs": out}
+
+
+BASIS = (
+    "Every test run has one step we broke on purpose, so the right answer is known in advance. "
+    "A method is counted correct only if its first pick is exactly that step. When a run is "
+    "fixed in the app, replaying it confirms the answer: fixing the right step makes the run succeed."
+)
+
+
+@router.get("/leaderboard")
+def leaderboard(session: Session = Depends(get_session)) -> dict:
+    """Accuracy of our model and each AI: fixed benchmark plus every run tested in the app."""
+    metrics = _read("metrics.json") or {}
+    test = (metrics.get("splits", {}).get("test", {}) or {}).get("methods", {})
+    judge_models = metrics.get("judge_models") or {}
+
+    truth = {r.id: r.fault_step for r in session.exec(
+        select(Run).where(Run.fault_step.is_not(None), Run.parent_run_id.is_(None))).all()}
+
+    # our model: latest diagnosis per run with a known answer
+    ours = {}
+    for d in session.exec(select(Diagnosis).order_by(Diagnosis.id)).all():
+        if d.run_id in truth and isinstance(d.ranking, dict):
+            ours[d.run_id] = d.ranking.get("canon_event", {}).get("idx") == truth[d.run_id]
+    live = {"Black Box": [sum(ours.values()), len(ours)]}
+    for rv in session.exec(select(AIReview)).all():
+        if rv.run_id in truth:
+            c = live.setdefault(rv.reviewer, [0, 0])
+            c[0] += int(rv.step == truth[rv.run_id])
+            c[1] += 1
+
+    rows = [{"key": "model", "name": "Black Box", "maker": "Our trained model"}]
+    for key in ("llm_judge", "llm_judge2", "llm_judge3"):
+        if judge_models.get(key):
+            name = model_label(judge_models[key])
+            rows.append({"key": key, "name": name, "maker": MAKERS.get(name, "")})
+    for r in rows:
+        b = test.get(r["key"], {})
+        r["benchmark"] = {"top1": b.get("top1"), "n": b.get("n")} if b.get("n") else None
+        c, t = live.get(r["name"], [0, 0])
+        r["live"] = {"correct": c, "total": t, "rate": round(c / t, 4) if t else None}
+    return {"basis": BASIS, "methods": rows}

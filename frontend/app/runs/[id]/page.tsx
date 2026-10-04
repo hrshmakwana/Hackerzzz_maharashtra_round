@@ -1,11 +1,12 @@
 "use client"
 
-import { ArrowLeft, Check, ChevronDown, Loader2, RotateCcw, Search, ShieldCheck, ShieldX, X } from "lucide-react"
+import { ArrowLeft, Check, ChevronDown, FileText, Loader2, RotateCcw, Search, ShieldCheck, ShieldX, X } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
-import { Loading, Problem, StepList, visibleSteps, btnPrimary } from "@/components/kit"
+import { Loading, Problem, StepList, visibleSteps, btnPrimary, btnSecondary } from "@/components/kit"
+import { Scorecard } from "@/components/scorecard"
 import { SecondOpinion } from "@/components/second-opinion"
 import { Universes } from "@/components/universes"
 import { API_URL, api, post, type Diagnosis, type ForkResult, type ReviewResult, type Run, type Verify } from "@/lib/api"
@@ -160,6 +161,19 @@ export default function RunPage() {
       {fix && <Proof ref={proofRef} run={run} fix={fix} />}
 
       {fix && <Universes runId={run.id} labelFor={labelFor} describe={describe} />}
+
+      {diag && (
+        <Scorecard key={review ? "reviewed" : "pending"} truth={run.fault_step} modelStep={diag.canon_event.idx}
+          review={review} labelFor={labelFor} />
+      )}
+
+      {diag && (
+        <div className="mt-6 text-center">
+          <Link href={`/runs/${run.id}/report`} className={btnSecondary}>
+            <FileText className="size-4" /> One-page report (PDF)
+          </Link>
+        </div>
+      )}
 
       <DevDetails run={run} rootIdx={rootIdx} />
     </main>

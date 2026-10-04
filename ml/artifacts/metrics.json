@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T10:11:02+00:00",
+ "generated_at": "2026-10-04T10:32:51+00:00",
  "model_version": "ranker-20261003-1348",
  "dataset": {
   "runs": 4998,
@@ -324,39 +324,39 @@
      }
     },
     "llm_judge3": {
-     "n": 32,
-     "top1": 0.8438,
-     "top3": 1.0,
-     "mrr": 0.9167,
-     "mean_step_distance": 0.5,
+     "n": 50,
+     "top1": 0.82,
+     "top3": 0.98,
+     "mrr": 0.8992,
+     "mean_step_distance": 0.56,
      "per_type_top1": {
       "bad_retrieval": {
        "top1": 1,
-       "n": 3
-      },
-      "calc_error": {
-       "top1": 1,
-       "n": 4
-      },
-      "early_stop": {
-       "top1": 0.7778,
-       "n": 9
-      },
-      "hallucination": {
-       "top1": 1,
        "n": 5
       },
+      "calc_error": {
+       "top1": 0.8333,
+       "n": 6
+      },
+      "early_stop": {
+       "top1": 0.7273,
+       "n": 11
+      },
+      "hallucination": {
+       "top1": 0.875,
+       "n": 8
+      },
       "ignored_error": {
-       "top1": 0.75,
-       "n": 4
+       "top1": 0.875,
+       "n": 8
       },
       "loop": {
        "top1": 1,
-       "n": 2
+       "n": 4
       },
       "wrong_args": {
-       "top1": 0.6,
-       "n": 5
+       "top1": 0.625,
+       "n": 8
       }
      }
     },
@@ -530,7 +530,21 @@
      }
     },
     "llm_judge3": {
-     "n": 0
+     "n": 25,
+     "top1": 0.48,
+     "top3": 1.0,
+     "mrr": 0.6733,
+     "mean_step_distance": 0.52,
+     "per_type_top1": {
+      "prompt_injection": {
+       "top1": 0,
+       "n": 13
+      },
+      "state_corruption": {
+       "top1": 1,
+       "n": 12
+      }
+     }
     },
     "first_error": {
      "n": 500,
@@ -690,7 +704,37 @@
      }
     },
     "llm_judge3": {
-     "n": 0
+     "n": 25,
+     "top1": 0.88,
+     "top3": 1.0,
+     "mrr": 0.94,
+     "mean_step_distance": 0.2,
+     "per_type_top1": {
+      "bad_retrieval": {
+       "top1": 0.6667,
+       "n": 3
+      },
+      "early_stop": {
+       "top1": 0.8,
+       "n": 5
+      },
+      "hallucination": {
+       "top1": 1,
+       "n": 7
+      },
+      "ignored_error": {
+       "top1": 1,
+       "n": 4
+      },
+      "loop": {
+       "top1": 1,
+       "n": 2
+      },
+      "wrong_args": {
+       "top1": 0.75,
+       "n": 4
+      }
+     }
     },
     "first_error": {
      "n": 359,

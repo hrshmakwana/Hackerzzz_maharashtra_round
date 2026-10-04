@@ -45,7 +45,7 @@ export function SiteHeader() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-bg/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b bg-bg/90 backdrop-blur print:hidden">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-5 md:gap-8 md:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Black Box home">
           <Logo />
@@ -82,7 +82,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t">
+    <footer className="mt-20 border-t print:hidden">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-sm text-dim md:px-8">
         <span>Black Box: a flight recorder for AI agents</span>
         <a href={REPO} className="hover:text-ink" target="_blank" rel="noreferrer">

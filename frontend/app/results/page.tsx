@@ -3,6 +3,7 @@
 import { ArrowUpRight, BadgeCheck } from "lucide-react"
 
 import { Eyebrow, Loading, Problem } from "@/components/kit"
+import { Scorecard } from "@/components/scorecard"
 import { REPO } from "@/components/site"
 import type { Metrics } from "@/lib/api"
 import { int, pct } from "@/lib/format"
@@ -88,6 +89,12 @@ export default function ResultsPage() {
             Each fix is checked by actually replaying the run from that step, not by trusting the model.
           </p>
         </div>
+      </section>
+
+      <section className="mt-16">
+        <Eyebrow>Live leaderboard</Eyebrow>
+        <h2 className="mb-6 text-2xl font-medium">Every run tested in the app counts</h2>
+        <Scorecard compact />
       </section>
 
       <div className="mt-8 flex flex-wrap justify-between gap-3 text-sm text-dim">

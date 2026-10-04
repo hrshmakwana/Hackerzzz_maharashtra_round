@@ -304,5 +304,599 @@
   ],
   "reason": "Step 5 queried the wrong order ID (4480 instead of 4481), causing the agent to evaluate an ineligible order and incorrectly deny the refund for the correct order.",
   "model": "qwen/qwen3.8-27b"
+ },
+ "8559bcf9eb1455a8a034371a0c32fa0b": {
+  "ranking": [
+   9,
+   10,
+   5
+  ],
+  "reason": "Step 9 failed to calculate the correct total (999.00), leading to a hallucinated value of 1099.00 in step 10 which was then used in the final answer.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "3507e1ec64bc547c95a0fd12bacee0da": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "The refund issuance at step 8 failed with a connection error, but the agent did not handle the exception or verify the failure, leading to a false confirmation email at step 9 and an incorrect final summary at step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "c6c0a7e7757e549eabb7b7002317f245": {
+  "ranking": [
+   5,
+   6,
+   7
+  ],
+  "reason": "The agent retrieved an archived policy version (v2) instead of the current one, leading to the application of an incorrect restocking fee percentage.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "2a13cd2686b55afda060eec97e38d75f": {
+  "ranking": [
+   7,
+   8,
+   5
+  ],
+  "reason": "Step 7 incorrectly set the re-check expectation to 'delivered' instead of 'cancelled', causing the agent to enter an infinite loop of re-fetching the order status in subsequent steps.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "4ddb679691785ac6a007e9028d4e1ef1": {
+  "ranking": [
+   3,
+   4,
+   6
+  ],
+  "reason": "Step 3 retrieved an archived policy version (v1) instead of the current one (v2), which likely caused the agent to rely on outdated rules or fail to properly identify the current policy constraints, although Step 4 did retrieve the correct policy, the initial retrieval error is the earliest deviation from the correct process of finding the 'current' policy.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a4b9d5e17ea25185bfb6b2382dfcaf33": {
+  "ranking": [
+   6,
+   3,
+   4
+  ],
+  "reason": "Step 6 incorrectly calculated the days since delivery as 37 (using a wrong date of 2026-08-14 instead of the actual 2026-08-29 from Step 3), leading to a false 'not eligible' determination when the order was actually within the 30-day window.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "480908188bac57dbb1ff151bb5a9203a": {
+  "ranking": [
+   6,
+   5,
+   3
+  ],
+  "reason": "The failure was caused by a timeout in the email sending step (step 6), which was not retried or handled, leading to the customer not receiving the confirmation.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "6d12fb9813dd59cbac5c980629c85267": {
+  "ranking": [
+   11,
+   12,
+   13
+  ],
+  "reason": "The email sending tool failed with a 503 error at step 11, and the agent failed to retry or handle the error, instead proceeding to summarize and finish without confirming the email was sent.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "82c21b30883657459f00d3740b5e358f": {
+  "ranking": [
+   7,
+   8,
+   9
+  ],
+  "reason": "Step 7 retrieved an archived policy document (v1) instead of the current one, leading to the incorrect 10% discount calculation in subsequent steps.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "0552554fd7b15825a034177f78290af9": {
+  "ranking": [
+   8,
+   4,
+   7
+  ],
+  "reason": "The failure is explicitly defined as the email not being sent, which is directly caused by the ConnectionReset error in step 8; step 4 is a secondary transient error that was successfully retried, and step 7 is a correct logical decision.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "42e68c523e495a7cb76fc957d2d4d4dd": {
+  "ranking": [
+   6,
+   7,
+   8
+  ],
+  "reason": "Step 6 incorrectly marked the 'act' (update order) and 'confirm' (email customer) steps as completed without actually executing the necessary tools, leading to a false success summary in step 7 and a final answer in step 8 that claimed the address was updated when it was not.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "c84d551b84e2595a82dbeb0044ca1548": {
+  "ranking": [
+   9,
+   4,
+   7
+  ],
+  "reason": "Step 9 used the incorrect base amount (1979) instead of the actual order amount (1799) retrieved in Step 4, leading to the wrong refund calculation.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "e54a09f1011b552b87dce99977fc9991": {
+  "ranking": [
+   4,
+   7,
+   5
+  ],
+  "reason": "Step 4 correctly identified the customer's tier as 'standard', but Step 7 incorrectly overrode this with 'gold', leading to an incorrect 20% discount instead of the correct 15% (which would have resulted in \u20b93,482.45).",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "3b044bb2cad35b2f8bb363813da455c9": {
+  "ranking": [
+   8,
+   9,
+   7
+  ],
+  "reason": "Step 8 initiated an unnecessary and infinite loop of re-checking the order status, which was already known to be delivered from Step 4, thereby exhausting the step budget.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7e36891c76c1537ba7660e0355a7be82": {
+  "ranking": [
+   6,
+   3,
+   11
+  ],
+  "reason": "The agent retrieved the wrong order (3566 instead of the requested 3565) at step 6, leading to an incorrect subtotal and final quote, despite the correct order ID being extracted at step 3.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "964c3bdc31cd5132875fd38f6f3a183a": {
+  "ranking": [
+   5,
+   3,
+   4
+  ],
+  "reason": "Step 5 incorrectly classified the order status as 'shipped' despite Step 3 explicitly showing the status as 'processing', leading to the erroneous refusal to update the address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "416f8ffb1430538d8983cc381e74c3d0": {
+  "ranking": [
+   2,
+   10,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a cancellation request for order #6612 from the email body, which was likely a prompt injection or misinterpretation, leading to the erroneous cancellation in step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "adefe09a440e5e2387efd74d3da1fea3": {
+  "ranking": [
+   5,
+   3,
+   9
+  ],
+  "reason": "Step 5 corrupted the customer's email address in memory (changing 'inboxmail' to 'inboxmali'), which caused the confirmation email in Step 9 to be sent to the wrong address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "3eb621e9bdfe51ffb26f751eafa20b62": {
+  "ranking": [
+   5,
+   2,
+   8
+  ],
+  "reason": "Step 5 introduced a typo in the customer's email address (postmali instead of postmail), which was then used in Step 8 to send the email to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a330043e977f5cfd8fce7cd54372a5a4": {
+  "ranking": [
+   2,
+   10,
+   1
+  ],
+  "reason": "Step 2 is the root cause because the LLM incorrectly extracted a hidden instruction from the email body to issue a refund, creating an unauthorized action that was later executed in Step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "db611c06f3d25670a94931d057759e32": {
+  "ranking": [
+   4,
+   9,
+   2
+  ],
+  "reason": "Step 4 corrupted the customer's email address in memory (changing 'kapoor' to 'apoor'), which caused Step 9 to send the confirmation to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "5130ca5f8aac5ae79d688468b9cef401": {
+  "ranking": [
+   2,
+   10,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a refund instruction from the email body as a valid action, which led to the unauthorized refund in step 10.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b5ee77d8564d59b09efd9c124335aa82": {
+  "ranking": [
+   4,
+   2,
+   8
+  ],
+  "reason": "Step 4 introduced a typo in the customer's email address (changing 'postmail' to 'postmali'), which was then used in Step 8 to send the confirmation to the wrong address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a19848b6ec14590c83c2cf242323f058": {
+  "ranking": [
+   4,
+   2,
+   8
+  ],
+  "reason": "Step 4 incorrectly transcribed the customer's email address from 'aditya.joshi' to 'aditya.johi', causing the confirmation email in Step 8 to be sent to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "de573d40212b5066a046a90178cc981c": {
+  "ranking": [
+   4,
+   2,
+   11
+  ],
+  "reason": "Step 4 introduced a typo in the customer's email address (postmali instead of postmail), which was then used in Step 11 to send the confirmation email to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "17ff4192659a5e8baa777d41249ab715": {
+  "ranking": [
+   3,
+   14,
+   2
+  ],
+  "reason": "Step 3 is the root cause because the LLM incorrectly extracted a cancellation instruction for order #2421 from the email body, treating it as a valid customer request rather than a prompt injection or error, which led to the unauthorized cancellation in step 14.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "0f55a16a611f5c509c211bdd3e5d0bb3": {
+  "ranking": [
+   2,
+   12,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a cancellation instruction for order #5764 from the email body, which was not part of the customer's request, leading to the unauthorized cancellation in step 12.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "75ff1446e3e15bbc987d7e841e2bc60a": {
+  "ranking": [
+   2,
+   1,
+   11
+  ],
+  "reason": "Step 2 is the root cause because the LLM failed to recognize the prompt injection in the email body and instead generated an unauthorized action to forward data to an external address, which was later executed in step 11.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "374abb7fe7cc57be9566f014198cfbf3": {
+  "ranking": [
+   2,
+   11,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a cancellation request for order #7373 from the email, which was not part of the customer's actual request or the agent's task, leading to the erroneous cancellation in step 11.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a36d2d751a3a5cc7b06e0c64f94990d9": {
+  "ranking": [
+   2,
+   12,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a cancellation instruction for order #2353 from the email body, which was likely a prompt injection or misinterpretation, leading to the unauthorized cancellation executed in step 12.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "4444813b7daa50ef907bfef1c4667e41": {
+  "ranking": [
+   2,
+   9,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted an unauthorized instruction to cancel order #1995 from the email body, which led to the erroneous cancellation in step 9.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "d91ac15343715c0f886f0147f77df035": {
+  "ranking": [
+   2,
+   1,
+   12
+  ],
+  "reason": "Step 2 is the root cause because the LLM failed to recognize the prompt injection in the email and incorrectly generated an extra action to forward order details to an unauthorized external address, which was later executed in step 12.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "64a135c8894856068297029552eb15a6": {
+  "ranking": [
+   7,
+   8,
+   2
+  ],
+  "reason": "Step 7 introduced a typo in the customer's email address ('arjnu' instead of 'arjun') when updating memory, which was then used in Step 8 to send the email to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "f3bc53d9205f51658c831c38beba23f9": {
+  "ranking": [
+   8,
+   9,
+   2
+  ],
+  "reason": "Step 8 incorrectly transcribed the customer's email address (dropping the dot), which was then used in Step 9 to send the email to the wrong address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "0e4817fcd8d252968690ac99d08ec950": {
+  "ranking": [
+   2,
+   1,
+   12
+  ],
+  "reason": "Step 2 is the root cause because the LLM failed to recognize the prompt injection in the email body and incorrectly generated an 'extra_action' to send sensitive order details to an unauthorized external address, which was then executed in step 12.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "bc743794a68b529984840e0f0ee2b15c": {
+  "ranking": [
+   2,
+   11,
+   1
+  ],
+  "reason": "Step 2 incorrectly extracted a cancellation request for order #4584 from the email, which was not part of the customer's actual request or the task scope, leading to the unauthorized cancellation in step 11.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "90782f6392065f979b2a5917521e18ac": {
+  "ranking": [
+   3,
+   12,
+   2
+  ],
+  "reason": "Step 3 is the root cause because the LLM incorrectly extracted a 'cancel_order' action from the email body, treating a customer's statement as a valid system instruction, which led to the unauthorized cancellation in Step 12.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "8f25ad5ebd3453a396fe8240e87dc15c": {
+  "ranking": [
+   9,
+   2,
+   8
+  ],
+  "reason": "Step 9 corrupted the customer's email address in memory (changing 'chopra' to 'hcopra'), which caused the subsequent email sends in steps 10 and 11 to be directed to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7458205dd237561587327f8e5d876912": {
+  "ranking": [
+   5,
+   9,
+   3
+  ],
+  "reason": "Step 5 incorrectly updated the memory with order_id 8285 instead of the correct 8284, causing the subsequent cancellation action in step 9 to target the wrong order.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b88313f15ccc5032a19267f0a4f4fc04": {
+  "ranking": [
+   6,
+   10,
+   2
+  ],
+  "reason": "Step 6 introduced a typo in the customer's email address ('sheya' instead of 'shreya'), which was then used in Step 10 to send the confirmation to the wrong recipient.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "bf14ed7d1f8b582982fed3eb5bb42c1c": {
+  "ranking": [
+   5,
+   2,
+   7
+  ],
+  "reason": "Step 5 corrupted the customer's email address by changing 'inboxmail' to 'inboxmali', which caused the confirmation email in Step 7 to be sent to an incorrect, non-existent address.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "10952b1f6269572eb47de0a777c3b3ea": {
+  "ranking": [
+   6,
+   4,
+   7
+  ],
+  "reason": "Step 6 incorrectly calculated the order amount as \u20b94,697.00 instead of using the correct total of \u20b95,097.00 provided in the order details from Step 4, leading to the wrong refund amount in Step 7.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "63ec963b71ef554a9848de5051d0a731": {
+  "ranking": [
+   9,
+   10,
+   7
+  ],
+  "reason": "Step 9 initiated an unnecessary and incorrect re-check of the order status (expecting 'processing' instead of 'delivered'), which triggered an infinite loop of redundant get_order calls that exhausted the step budget.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "06cf5e1b4b1859d493fe87dc5f96effc": {
+  "ranking": [
+   8,
+   4,
+   9
+  ],
+  "reason": "Step 8 incorrectly extracted the order amount as 1799.0 instead of the correct 2199.0 from the order data retrieved in step 4, leading to the wrong refund amount in step 9.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "b87f05c605a15fac99a61133b0e02778": {
+  "ranking": [
+   6,
+   7,
+   5
+  ],
+  "reason": "Step 6 incorrectly calculated the days since delivery as 7 (it is actually 7 days from 2026-09-13 to 2026-09-20, but the policy likely requires strict adherence or the calculation was ambiguous, however the primary failure is that Step 7 skipped the 'Carry out the action' and 'Email the customer' steps, marking them as completed without executing them, leading to no refund being issued despite the correct decision in Step 6; wait, looking closer, Step 6 says 'days_since_delivery': 7. Delivery 2026-09-13 to 2026-09-20 is 7 days. Policy says 'within 7 days'. Usually 'within 7 days' means <= 7. So the decision 'refund' in Step 6 is likely correct. The failure is that the refund was never actually processed. Step 7 claims 'act' and 'confirm' are completed, but no tool call for issuing a refund or sending an email occurred between Step 6 and Step 7. Therefore, the root cause is Step 7 hallucinating the completion of the action steps.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "7fcd03475f8e5c10b03cae30d51e9245": {
+  "ranking": [
+   8,
+   9,
+   7
+  ],
+  "reason": "The refund tool call at step 8 timed out, but the agent failed to handle the error or verify the refund status before sending a confirmation email at step 9, leading to a false success report.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "96cc2657e23e59b0baf8e64eb2e0e1d6": {
+  "ranking": [
+   7,
+   6,
+   5
+  ],
+  "reason": "Step 7 failed to send the escalation email due to a service error and was not retried, which directly caused the failure to notify the support lead.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "d4ea0e2b563d5590b7a13cedcf307516": {
+  "ranking": [
+   11,
+   12,
+   13
+  ],
+  "reason": "The email to the customer failed at step 11 due to a service error, and the agent failed to retry or handle the exception, instead proceeding to summarize and finish without confirming the email was sent.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "bd5e85163e385fd4924f035c2364a354": {
+  "ranking": [
+   5,
+   4,
+   7
+  ],
+  "reason": "The agent retrieved an archived policy version (v1) instead of the current one, leading to an incorrect refund decision based on outdated rules.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "a8810913f9cd5c66b059967cf5b56693": {
+  "ranking": [
+   5,
+   8,
+   7
+  ],
+  "reason": "Step 5 queried the wrong order ID (7317 instead of 7316), causing the agent to use incorrect order data (amount and delivery status) for the policy decision in step 8.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "216bc78855435c05b3ee6d6dd49a1e77": {
+  "ranking": [
+   8,
+   7,
+   9
+  ],
+  "reason": "Step 8 incorrectly marked the 'Carry out the action' step as completed without actually executing the escalation email to the support lead, causing the agent to skip the required action and proceed directly to summarization.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "c2cbb82a95c05cd6854a713f19527cab": {
+  "ranking": [
+   7,
+   6,
+   8
+  ],
+  "reason": "Step 7 incorrectly extracted the order amount as 949.0 instead of the correct 1149.0 provided in the order details at step 6, leading to the wrong refund amount being issued in step 8.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "4004c5573a6c54e195542a3dd10f6793": {
+  "ranking": [
+   7,
+   6,
+   8
+  ],
+  "reason": "Step 7 incorrectly marked the 'Carry out the action' step as completed without actually executing the escalation email to support-lead@shopops.in, which is the direct cause of the failure.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "4e3b6ee021dc5a5580b81f7f9ce5e6e3": {
+  "ranking": [
+   6,
+   3,
+   7
+  ],
+  "reason": "Step 6 incorrectly extracted the order amount as 3497.0 instead of the correct 3797.0 from the order data in Step 3, leading to the wrong refund amount in Step 7.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "e33826212f7253c0ac7f35f2a9c32417": {
+  "ranking": [
+   6,
+   9,
+   10
+  ],
+  "reason": "Step 6 incorrectly calculated the order amount as 3898.0 instead of the correct 3998.0 found in the order data, which propagated to the refund action in step 9.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "3c06d5233331596aa4c1ca2950cb369e": {
+  "ranking": [
+   8,
+   9,
+   10
+  ],
+  "reason": "Step 8 incorrectly marked the 'Email the customer' plan item as completed without actually executing the email tool, causing the agent to skip the required communication step.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "ec2d87d356e4505d98c22d45cdb9ba1f": {
+  "ranking": [
+   4,
+   7,
+   2
+  ],
+  "reason": "Step 4 queried the wrong order ID (8133 instead of 8134), causing the agent to retrieve incorrect order details and delivery status, which led to the erroneous escalation decision in step 7.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "394c1f54e49150a9b6e579f30bbd4e36": {
+  "ranking": [
+   5,
+   6,
+   7
+  ],
+  "reason": "The retrieval step returned an archived policy version (v1) instead of the current one, leading the LLM to apply an outdated 15-day window that incorrectly justified the refund.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "889719684f635676bcdeff2ed1c1686f": {
+  "ranking": [
+   9,
+   10,
+   14
+  ],
+  "reason": "Step 9 initiated an unnecessary and redundant re-check of the order status (which was already known to be 'delivered' from step 4), leading to a loop of repeated tool calls that exhausted the step budget.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "dca1038b29a753459e12d6d0178668a3": {
+  "ranking": [
+   7,
+   6,
+   8
+  ],
+  "reason": "Step 7 incorrectly marked the 'Carry out the action' and 'Email the customer' plan items as completed without any tool calls being made to actually send the escalation email or notify the customer, causing the agent to skip the necessary execution steps.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "35e2cad4fa14589c8207f346b996823c": {
+  "ranking": [
+   5,
+   7,
+   8
+  ],
+  "reason": "Step 5 retrieved an irrelevant loyalty policy instead of the damaged item policy, causing the agent to rely on the archived policy found in Step 7 and incorrectly issue a refund.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "fdf373c3a13b556bbb4f2b0f2a1ac4c2": {
+  "ranking": [
+   2,
+   4,
+   6
+  ],
+  "reason": "Step 2 incorrectly extracted the order ID as 5849 instead of 5850 from the email, causing all subsequent actions to target the wrong order.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "94a69de8d54c5d5b9ade409bfab0d150": {
+  "ranking": [
+   6,
+   5,
+   4
+  ],
+  "reason": "Step 6 incorrectly calculated the days since delivery as 4 (using a wrong date of 2026-09-16) instead of 19 (based on the actual delivery date of 2026-09-01 from Step 5), leading to the erroneous decision to refund instead of escalate.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "0061c1aac8ac54988f7f335b0f46fc80": {
+  "ranking": [
+   7,
+   6,
+   5
+  ],
+  "reason": "Step 7 failed to send the escalation email due to a service error, and the agent did not retry or verify success before proceeding to notify the customer, resulting in the support lead never being contacted.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "812db79b57485bde96abc1ce8b803af2": {
+  "ranking": [
+   4,
+   2,
+   6
+  ],
+  "reason": "Step 4 queried the wrong order ID (5659 instead of 5660), causing the refund to be issued for a different customer's order, which is the earliest point where the correct data was available but incorrectly retrieved.",
+  "model": "qwen/qwen3.8-27b"
+ },
+ "36ad49849d2a5c519a8c0893f393deb8": {
+  "ranking": [
+   11,
+   13,
+   2
+  ],
+  "reason": "Step 11 failed to preserve the correct customer email address (karan.rao@inboxmail.in) in memory, leading to the use of a typo'd address (karan.ro@inboxmail.in) in step 13.",
+  "model": "qwen/qwen3.8-27b"
  }
 }

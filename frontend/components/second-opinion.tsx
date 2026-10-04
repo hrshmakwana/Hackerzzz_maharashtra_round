@@ -20,12 +20,13 @@ export function SecondOpinion({ result, loading, error, labelFor }: {
         <h2 className="text-base font-medium">Second opinion from other AIs</h2>
         {result && total > 0 && (
           <span className="text-sm text-dim">
-            {result.agree} of {total} agree
+            {result.agree} of {total} picked the same step
           </span>
         )}
       </div>
       <p className="mt-1 text-sm text-dim">
-        Independent AI models from different companies read the same recording and check our answer.
+        Three AI models from different companies each read the same recording on their own, without seeing our
+        answer, and name the step they think caused it.
       </p>
 
       {loading && !result && (
@@ -57,7 +58,7 @@ export function SecondOpinion({ result, loading, error, labelFor }: {
                     <span className="font-medium">{r.name}</span>
                     {r.maker && <span className="text-dim"> by {r.maker}</span>}{" "}
                     <span className={cn(state === "agree" ? "text-success" : state === "disagree" ? "text-fail" : "text-dim")}>
-                      {state === "agree" ? "agrees" : state === "disagree" ? `would blame ${r.step !== null ? labelFor(r.step) : "a different step"}` : "did not answer"}
+                      {state === "agree" ? "picked the same step" : state === "disagree" ? `picked ${r.step !== null ? labelFor(r.step) : "a different step"}` : "did not answer"}
                     </span>
                   </p>
                   {r.reason && <p className="mt-0.5 leading-6 text-dim">{r.reason}</p>}
