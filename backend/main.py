@@ -61,11 +61,17 @@ for r in (runs, diagnose, replay, compare, eval, live):
 
 @app.get("/api/health")
 def health() -> dict:
+    model_version = None
+    if models_available():
+        try:
+            model_version = load_models().version
+        except Exception:
+            model_version = None
     return {
         "status": "ok",
         "runs": db.run_count(),
         "seeding": STATE["seeding"],
         "seed_error": STATE["seed_error"],
-        "model": load_models().version if models_available() else None,
+        "model": model_version,
         "gemini": gemini_available(),
     }

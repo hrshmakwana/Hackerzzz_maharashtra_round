@@ -1,6 +1,11 @@
-PY ?= python3.11
 VENV := .venv
-BIN := $(VENV)/bin
+ifeq ($(OS),Windows_NT)
+	BIN := $(VENV)/Scripts
+	PY ?= python
+else
+	BIN := $(VENV)/bin
+	PY ?= python3.11
+endif
 
 .PHONY: setup data train eval api web test demo docker
 

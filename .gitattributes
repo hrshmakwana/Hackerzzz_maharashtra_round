@@ -1,0 +1,3 @@
+ml/artifacts/*.txt text eol=lf
+*.jsonl text eol=lf
+
