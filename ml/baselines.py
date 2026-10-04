@@ -13,6 +13,7 @@ from typing import Optional
 from .common import ARTIFACTS
 
 JUDGE_CACHE = ARTIFACTS / "llm_judge_cache.json"
+JUDGE2_CACHE = ARTIFACTS / "llm_judge2_cache.json"  # second, independent AI (via Groq)
 
 
 def rank_random(run: dict, seed: int = 0) -> list[int]:
@@ -80,14 +81,15 @@ def judge_prompt(run: dict) -> str:
 
 
 def run_llm_judge(runs: list[dict], limit: int = 100, path: Path = JUDGE_CACHE,
-                  sleep: float = 4.5) -> dict:
-    """Ask Gemini for the culprit step on up to ``limit`` runs, caching every answer."""
+                  sleep: float = 4.5, client=None) -> dict:
+    """Ask an LLM (Gemini by default) for the culprit step on up to ``limit`` runs,
+    caching every answer."""
     import time
 
     from agent_sim.llm import GeminiClient
 
     cache = load_judge_cache(path)
-    client = GeminiClient()
+    client = client or GeminiClient()
     todo = [r for r in runs if r["id"] not in cache][: max(0, limit - len(cache))]
     for i, run in enumerate(todo):
         try:
@@ -110,6 +112,7 @@ def main() -> None:
 
     ap = argparse.ArgumentParser(description="Run the Gemini judge baseline on a fixed sample.")
     ap.add_argument("--limit", type=int, default=100)
+    ap.add_argument("--second", action="store_true", help="use the second AI (Groq) instead of Gemini")
     args = ap.parse_args()
     runs = [r for r in load_runs() if r["status"] == "fail" and r.get("fault_step") is not None]
     picked = []
@@ -117,7 +120,12 @@ def main() -> None:
         pool = [r for r in runs if r["split"] == split]
         random.Random(f"judge:{split}").shuffle(pool)
         picked += pool[: int(args.limit * share)]
-    run_llm_judge(picked, limit=args.limit)
+    if args.second:
+        from agent_sim.llm import GroqClient
+
+        run_llm_judge(picked, limit=args.limit, path=JUDGE2_CACHE, sleep=2.5, client=GroqClient())
+    else:
+        run_llm_judge(picked, limit=args.limit)
 
 
 if __name__ == "__main__":

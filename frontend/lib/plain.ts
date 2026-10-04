@@ -107,3 +107,15 @@ export function plainReason(step: Step | undefined, evidence: string[]): string 
   return capital(evidence[0] ?? "This step does not match what the tools reported.")
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+/** Short human name for a model id, e.g. "openai/gpt-oss-120b" -> "GPT-OSS". */
+export function modelLabel(model: string | null | undefined): string {
+  const m = (model ?? "").toLowerCase().split("/").pop() ?? ""
+  if (m.includes("gemini")) return "Gemini"
+  if (m.includes("gpt-oss")) return "GPT-OSS"
+  if (m.includes("llama")) return "Llama"
+  if (m.includes("qwen")) return "Qwen"
+  if (m.includes("deepseek")) return "DeepSeek"
+  if (m.includes("kimi")) return "Kimi"
+  return m ? m.split("-")[0].replace(/^\w/, (c) => c.toUpperCase()) : "Another AI"
+}

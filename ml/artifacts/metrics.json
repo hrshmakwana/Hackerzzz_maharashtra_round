@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T03:42:35+00:00",
+ "generated_at": "2026-10-04T09:29:56+00:00",
  "model_version": "ranker-20261003-1348",
  "dataset": {
   "runs": 4998,
@@ -86,6 +86,9 @@
      }
     },
     "llm_judge": {
+     "n": 0
+    },
+    "llm_judge2": {
      "n": 0
     },
     "first_error": {
@@ -280,6 +283,9 @@
       }
      }
     },
+    "llm_judge2": {
+     "n": 0
+    },
     "first_error": {
      "n": 306,
      "top1": 0.1373,
@@ -432,6 +438,9 @@
       }
      }
     },
+    "llm_judge2": {
+     "n": 0
+    },
     "first_error": {
      "n": 500,
      "top1": 0.0,
@@ -555,6 +564,9 @@
        "n": 3
       }
      }
+    },
+    "llm_judge2": {
+     "n": 0
     },
     "first_error": {
      "n": 359,
@@ -758,6 +770,10 @@
   }
  },
  "judge_runs": 99,
+ "judge_models": {
+  "llm_judge": "gemini-flash-lite-latest",
+  "llm_judge2": null
+ },
  "replay": {
   "n": 150,
   "splits": {
@@ -796,5 +812,5 @@
    }
   }
  },
- "seconds": 9.5
+ "seconds": 9.6
 }

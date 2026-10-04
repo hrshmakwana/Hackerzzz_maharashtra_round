@@ -10,7 +10,7 @@ from sqlmodel import Session, select
 
 from agent_sim.faults import FAULT_TYPES, HELDOUT_FAULT_TYPES
 from agent_sim.hero import HERO_RUNS
-from agent_sim.llm import gemini_available
+from agent_sim.llm import gemini_available, reviewers
 from agent_sim.tasks import FAMILIES, HELDOUT_FAMILY
 from agent_sim.world import POLICY_DOCS
 from ml.common import ARTIFACTS, load_models, models_available
@@ -87,6 +87,7 @@ def meta() -> dict:
         "edit_types": ["override_args", "override_output", "override_decision", "swap_document",
                        "patch_prompt"],
         "policies": {"sim": True, "gemini": gemini_available()},
+        "reviewers": [{"name": n, "model": c.model} for n, c in reviewers()],
         "model": {"available": models_available(),
                   "version": load_models().version if models_available() else None},
         "documents": [{k: d[k] for k in ("doc_id", "title", "topic", "version", "status")}

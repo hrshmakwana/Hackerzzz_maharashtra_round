@@ -93,8 +93,11 @@ def sweep(session: Session, run_id: str, top_k: int = 3) -> dict:
         fix = propose_fix(run, k, rows, load_checkpoint=_loader(session))
         entry = {"rank": rank + 1, "step": k, "name": r["name"], "prob": r["prob"], "fix": fix}
         if fix is None:
-            entry.update({"status": None, "flipped": False, "fork_id": None,
-                          "note": "no visible problem to repair at this step"})
+            # nothing to repair here: replay this universe unchanged to show the ending holds
+            res = fork(session, run_id, k, [], kind="sweep")
+            entry.update({"status": res["status"], "flipped": res["flipped"], "fork_id": res["id"],
+                          "savings": res["savings"], "replayed_unchanged": True,
+                          "note": "no visible problem at this step, replayed as it was"})
         else:
             res = fork(session, run_id, k, [fix["edit"]], kind="sweep")
             entry.update({"status": res["status"], "flipped": res["flipped"], "fork_id": res["id"],

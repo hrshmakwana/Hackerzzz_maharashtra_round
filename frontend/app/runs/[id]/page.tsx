@@ -6,8 +6,10 @@ import { useParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { Loading, Problem, StepList, visibleSteps, btnPrimary } from "@/components/kit"
-import { API_URL, api, post, type Diagnosis, type ForkResult, type Run, type Verify } from "@/lib/api"
-import { amountIn, capital, plainReason, TASK_TITLE } from "@/lib/plain"
+import { SecondOpinion } from "@/components/second-opinion"
+import { Universes } from "@/components/universes"
+import { API_URL, api, post, type Diagnosis, type ForkResult, type ReviewResult, type Run, type Verify } from "@/lib/api"
+import { amountIn, capital, describeStep, plainReason, TASK_TITLE } from "@/lib/plain"
 import { useApi } from "@/lib/use-api"
 import { cn } from "@/lib/utils"
 
@@ -21,6 +23,9 @@ export default function RunPage() {
   const [busy, setBusy] = useState<"cause" | "fix" | null>(null)
   const [problem, setProblem] = useState<string | null>(null)
   const [reasoning, setReasoning] = useState(false)
+  const [review, setReview] = useState<ReviewResult | null>(null)
+  const [reviewBusy, setReviewBusy] = useState(false)
+  const [reviewError, setReviewError] = useState<string | null>(null)
   const proofRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -35,12 +40,34 @@ export default function RunPage() {
   const rootStep = run.steps.find((s) => s.idx === rootIdx)
   const items = visibleSteps(run.steps, rootIdx, reasoning)
   const stage: Stage = fix ? 3 : diag ? 2 : 1
+  const numbering = new Map(visibleSteps(run.steps, rootIdx).map((x) => [x.step.idx, x.n]))
+  const labelFor = (idx: number) => {
+    const n = numbering.get(idx)
+    return n ? `step ${String(n).padStart(2, "0")}` : "a reasoning step"
+  }
+  const describe = (idx: number) => {
+    const st = run.steps.find((x) => x.idx === idx)
+    return st ? describeStep(st) : ""
+  }
+
+  const askReviewers = async () => {
+    setReviewBusy(true)
+    setReviewError(null)
+    try {
+      setReview(await post<ReviewResult>(`/runs/${id}/review`))
+    } catch (e) {
+      setReviewError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setReviewBusy(false)
+    }
+  }
 
   const findCause = async () => {
     setBusy("cause")
     setProblem(null)
     try {
       setDiag(await post<Diagnosis>(`/runs/${id}/diagnose`))
+      void askReviewers()
     } catch (e) {
       setProblem(e instanceof Error ? e.message : String(e))
     } finally {
@@ -108,6 +135,8 @@ export default function RunPage() {
         />
       </section>
 
+      {diag && <SecondOpinion result={review} loading={reviewBusy} error={reviewError} labelFor={labelFor} />}
+
       {failed && !fix && (
         <div className="mt-8">
           {!diag ? (
@@ -129,6 +158,8 @@ export default function RunPage() {
       )}
 
       {fix && <Proof ref={proofRef} run={run} fix={fix} />}
+
+      {fix && <Universes runId={run.id} labelFor={labelFor} describe={describe} />}
 
       <DevDetails run={run} rootIdx={rootIdx} />
     </main>

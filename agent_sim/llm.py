@@ -134,3 +134,86 @@ class GeminiClient:
         if use_cache:
             cache_put(key, data)
         return data
+
+
+# ------------------------------------------------------------------- groq
+
+
+def groq_available() -> bool:
+    return bool(os.getenv("GROQ_API_KEY"))
+
+
+class GroqClient:
+    """Groq's OpenAI-compatible chat API (free tier), used as an independent reviewer."""
+
+    URL = "https://api.groq.com/openai/v1"
+
+    def __init__(self, model: Optional[str] = None):
+        self.key = os.getenv("GROQ_API_KEY")
+        if not self.key:
+            raise LLMUnavailable("GROQ_API_KEY is not set")
+        self.model = model or os.getenv("GROQ_MODEL") or "openai/gpt-oss-120b"
+
+    def _post(self, payload: dict, retries: int = 4) -> dict:
+        import httpx
+
+        delay = 2.0
+        for attempt in range(retries):
+            r = httpx.post(f"{self.URL}/chat/completions", json=payload, timeout=60,
+                           headers={"Authorization": f"Bearer {self.key}"})
+            if r.status_code in (429, 500, 502, 503) and attempt < retries - 1:
+                wait = float(r.headers.get("retry-after", delay))
+                time.sleep(min(max(wait, delay), 30))
+                delay *= 2
+                continue
+            r.raise_for_status()
+            return r.json()
+        raise RuntimeError("Groq request failed")
+
+    def json(self, prompt: str, *, system: Optional[str] = None, use_cache: bool = True) -> dict:
+        key = sha256(canonical_json({"m": "groq:" + self.model, "p": prompt, "s": system, "j": 1}))
+        if use_cache and (hit := cache_get(key)) is not None:
+            return hit
+        messages = ([{"role": "system", "content": system}] if system else []) + \
+            [{"role": "user", "content": prompt}]
+        data = self._post({"model": self.model, "messages": messages, "temperature": 0,
+                           "response_format": {"type": "json_object"}})
+        raw = (data["choices"][0]["message"].get("content") or "").strip()
+        try:
+            out = json.loads(raw)
+        except ValueError:
+            m = re.search(r"\{.*\}", raw, re.S)
+            out = json.loads(m.group(0)) if m else {}
+        if use_cache:
+            cache_put(key, out)
+        return out
+
+
+def model_label(model: str) -> str:
+    """Short, human name for a model id."""
+    m = model.lower().split("/")[-1]
+    if "gemini" in m:
+        return "Gemini"
+    if "gpt-oss" in m:
+        return "GPT-OSS"
+    if "llama" in m:
+        return "Llama"
+    if "qwen" in m:
+        return "Qwen"
+    if "deepseek" in m:
+        return "DeepSeek"
+    if "kimi" in m:
+        return "Kimi"
+    return m.split("-")[0].capitalize()
+
+
+def reviewers() -> list[tuple[str, Any]]:
+    """Independent AIs available to double-check a diagnosis."""
+    out: list[tuple[str, Any]] = []
+    if gemini_available():
+        c = GeminiClient()
+        out.append((model_label(c.model or "gemini"), c))
+    if groq_available():
+        c = GroqClient()
+        out.append((model_label(c.model), c))
+    return out

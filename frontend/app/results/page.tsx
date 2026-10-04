@@ -6,15 +6,20 @@ import { Eyebrow, Loading, Problem } from "@/components/kit"
 import { REPO } from "@/components/site"
 import type { Metrics } from "@/lib/api"
 import { int, pct } from "@/lib/format"
+import { modelLabel } from "@/lib/plain"
 import { useApi } from "@/lib/use-api"
 import { cn } from "@/lib/utils"
 
-const METHODS = [
-  { key: "model", name: "Black Box", how: "Our trained model" },
-  { key: "llm_judge", name: "Ask Gemini", how: "Gemini reads the whole recording and names the step" },
-  { key: "last_step", name: "Blame the last step", how: "Assume the last action caused it" },
-  { key: "random", name: "Random guess", how: "Pick any step" },
-]
+const methods = (m: Metrics) => {
+  const second = modelLabel(m.judge_models?.llm_judge2)
+  return [
+    { key: "model", name: "Black Box", how: "Our trained model" },
+    { key: "llm_judge", name: "Ask Gemini", how: "Gemini reads the whole recording and names the step" },
+    { key: "llm_judge2", name: `Ask ${second}`, how: `${second} reads the whole recording and names the step` },
+    { key: "last_step", name: "Blame the last step", how: "Assume the last action caused it" },
+    { key: "random", name: "Random guess", how: "Pick any step" },
+  ]
+}
 
 export default function ResultsPage() {
   const { data: m, error, reload } = useApi<Metrics>("/eval")
@@ -37,7 +42,7 @@ export default function ResultsPage() {
       </p>
 
       <ul className="mt-10 space-y-3">
-        {METHODS.filter((x) => test[x.key]?.n).map((x) => {
+        {methods(m).filter((x) => test[x.key]?.n).map((x) => {
           const r = test[x.key]
           const ours = x.key === "model"
           return (

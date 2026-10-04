@@ -236,6 +236,7 @@ export interface Metrics {
   feature_importance: { feature: string; gain: number }[]
   replay?: { n: number; splits: Record<string, Record<string, number>> }
   judge_runs: number
+  judge_models?: Record<string, string | null>
   train: Record<string, any>
 }
 
@@ -292,3 +293,20 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const post = <T>(path: string, body?: unknown) =>
   api<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) })
+
+export interface Review {
+  name: string
+  model: string
+  agree: boolean | null
+  step: number | null
+  reason: string
+  error?: string
+}
+
+export interface ReviewResult {
+  run_id: string
+  model_step: number
+  reviews: Review[]
+  agree: number
+  available: boolean
+}

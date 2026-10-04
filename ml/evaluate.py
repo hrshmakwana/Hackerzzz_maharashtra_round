@@ -18,7 +18,14 @@ from typing import Callable, Optional
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
-from .baselines import load_judge_cache, rank_first_error, rank_last_step, rank_llm_judge, rank_random
+from .baselines import (
+    JUDGE2_CACHE,
+    load_judge_cache,
+    rank_first_error,
+    rank_last_step,
+    rank_llm_judge,
+    rank_random,
+)
 from .common import ARTIFACTS, ROOT, load_models, load_runs
 
 SPLITS = ["val", "test", "heldout_type", "heldout_family", "live"]
@@ -29,7 +36,7 @@ SPLIT_LABELS = {
     "heldout_family": "Held-out task family",
     "live": "Real Gemini agent",
 }
-METHODS = ["model", "llm_judge", "first_error", "last_step", "random"]
+METHODS = ["model", "llm_judge", "llm_judge2", "first_error", "last_step", "random"]
 
 
 def ranking_metrics(runs: list[dict], rank: Callable[[dict], Optional[list[int]]]) -> dict:
@@ -79,9 +86,11 @@ def evaluate(runs: list[dict] | None = None, replay: bool = True, quiet: bool = 
         runs = runs + load_runs(live_path)
     models = load_models()
     judge_cache = load_judge_cache()
+    judge2_cache = load_judge_cache(JUDGE2_CACHE)
     rankers = {
         "model": model_ranker(models),
         "llm_judge": lambda r: rank_llm_judge(r, judge_cache),
+        "llm_judge2": lambda r: rank_llm_judge(r, judge2_cache),
         "first_error": rank_first_error,
         "last_step": rank_last_step,
         "random": rank_random,
@@ -121,6 +130,10 @@ def evaluate(runs: list[dict] | None = None, replay: bool = True, quiet: bool = 
         "feature_importance": info["feature_importance"][:20],
         "train": {k: info[k] for k in ("train_runs", "ranking_groups", "features", "best_iteration")},
         "judge_runs": sum(1 for v in judge_cache.values() if v.get("ranking") is not None),
+        "judge_models": {
+            "llm_judge": next((v.get("model") for v in judge_cache.values() if v.get("model")), None),
+            "llm_judge2": next((v.get("model") for v in judge2_cache.values() if v.get("model")), None),
+        },
     }
     if replay:
         from .replay_eval import replay_stats
